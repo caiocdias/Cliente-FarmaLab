@@ -65,11 +65,17 @@ public class Cliente extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Pessoa p = new Pessoa();
+        System.out.println("pessoa feita eita bixo");
+        
+        p.setNome("Auau");
+        p.setCpf("999.999.999-99");
+        p.setEndereco("Rua 123");
+        p.setTelefone("40028922");  
         try {
             Registry reg = LocateRegistry.getRegistry("localhost",1022);
             InterfacePessoa pessoa = (InterfacePessoa) reg.lookup("server");
-            Pessoa pessoaRecebida = pessoa.getPessoa(p);
-            System.out.println("Nome da pessoa:" + pessoaRecebida.getNome());
+            pessoa.inserirPessoa(p);
+            System.out.println("Talvez deu certo");
         } catch(Exception e) {
             System.out.println(e);
         }
