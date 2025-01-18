@@ -6,6 +6,9 @@
 package view;
 
 import controller.InterfacePessoa;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import model.Pessoa;
 
 /**
  *
@@ -61,9 +64,16 @@ public class Cliente extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        //Registro - Registry
-        InterfacePessoa servico = (InterfacePessoa) conexao.lookup("pessoa");
-        servico.inserirPessoa(p);
+        Pessoa p = new Pessoa();
+        try {
+            Registry reg = LocateRegistry.getRegistry("localhost",1022);
+            InterfacePessoa pessoa = (InterfacePessoa) reg.lookup("server");
+            Pessoa pessoaRecebida = pessoa.getPessoa(p);
+            System.out.println("Nome da pessoa:" + pessoaRecebida.getNome());
+        } catch(Exception e) {
+            System.out.println(e);
+        }
+        
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
