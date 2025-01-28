@@ -5,7 +5,7 @@
  */
 package view;
 
-import controller.InterfacePessoa;
+import controller.InterfaceCliente;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import model.Pessoa;
@@ -48,34 +48,30 @@ public class Cliente extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(238, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(91, 91, 91))
+                .addContainerGap(309, Short.MAX_VALUE)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(254, 254, 254))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(152, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(127, 127, 127))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(121, 121, 121)
+                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(149, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Pessoa p = new Pessoa();
-        System.out.println("pessoa feita eita bixo");
-        
-        p.setNome("Auau");
-        p.setCpf("999.999.999-99");
-        p.setEndereco("Rua 123");
-        p.setTelefone("40028922");  
+        Cliente cliente = new Cliente();
+        cliente.setName("teste");
         try {
-            Registry reg = LocateRegistry.getRegistry("localhost",1022);
-            InterfacePessoa pessoa = (InterfacePessoa) reg.lookup("server");
-            pessoa.inserirPessoa(p);
-            System.out.println("Talvez deu certo");
+            Registry registro = LocateRegistry.getRegistry("localhost",1099);
+            InterfaceCliente icliente = (InterfaceCliente) registro.lookup("//localhost/Cliente");
+            icliente.inserirCliente(cliente);
+            
+            
         } catch(Exception e) {
             System.out.println(e);
         }
