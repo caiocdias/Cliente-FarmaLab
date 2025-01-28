@@ -8,18 +8,18 @@ package view;
 import controller.InterfaceCliente;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import model.Pessoa;
+import model.Cliente;
 
 /**
  *
  * @author crism
  */
-public class Cliente extends javax.swing.JFrame {
+public class Client extends javax.swing.JFrame {
 
     /**
      * Creates new form Cliente
      */
-    public Cliente() {
+    public Client() {
         initComponents();
     }
 
@@ -65,12 +65,11 @@ public class Cliente extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Cliente cliente = new Cliente();
-        cliente.setName("teste");
+        cliente.setNome("teste");
         try {
             Registry registro = LocateRegistry.getRegistry("localhost",1099);
             InterfaceCliente icliente = (InterfaceCliente) registro.lookup("//localhost/Cliente");
             icliente.inserirCliente(cliente);
-            
             
         } catch(Exception e) {
             System.out.println(e);
@@ -108,7 +107,7 @@ public class Cliente extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Cliente().setVisible(true);
+                new Client().setVisible(true);
             }
         });
     }
