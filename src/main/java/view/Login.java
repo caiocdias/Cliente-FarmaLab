@@ -1,20 +1,21 @@
 package view;
 
-import controller.InterfaceCliente;
+import controller.InterfaceFuncionario;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import javax.swing.JOptionPane;
 import model.Cliente;
 
 /**
  *
  * @author crism
  */
-public class Client extends javax.swing.JFrame {
+public class Login extends javax.swing.JFrame {
 
     /**
      * Creates new form Cliente
      */
-    public Client() {
+    public Login() {
         initComponents();
     }
 
@@ -30,7 +31,11 @@ public class Client extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
-        Button = new javax.swing.JButton();
+        loginButton = new javax.swing.JButton();
+        cpfLabel = new javax.swing.JLabel();
+        cpfField = new javax.swing.JTextField();
+        senhaLabel = new javax.swing.JLabel();
+        senhaField = new javax.swing.JPasswordField();
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -71,10 +76,26 @@ public class Client extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("teste"); // NOI18N
 
-        Button.setText("TESTE");
-        Button.addActionListener(new java.awt.event.ActionListener() {
+        loginButton.setText("Login");
+        loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ButtonActionPerformed(evt);
+                loginButtonActionPerformed(evt);
+            }
+        });
+
+        cpfLabel.setText("CPF:");
+
+        cpfField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cpfFieldActionPerformed(evt);
+            }
+        });
+
+        senhaLabel.setText("Senha:");
+
+        senhaField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                senhaFieldActionPerformed(evt);
             }
         });
 
@@ -82,45 +103,69 @@ public class Client extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(Button, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(18, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(30, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(senhaLabel)
+                    .addComponent(cpfLabel)
+                    .addComponent(loginButton, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                    .addComponent(cpfField)
+                    .addComponent(senhaField))
+                .addGap(26, 26, 26))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(104, Short.MAX_VALUE)
-                .addComponent(Button, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(90, 90, 90))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addComponent(cpfLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(cpfField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(senhaLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(senhaField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(50, 50, 50)
+                .addComponent(loginButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(53, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonActionPerformed
-        Cliente cliente = new Cliente();
-        cliente.setNome("teste");
+    private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
+        String cpf = cpfField.getText();
+        String senha = new String(senhaField.getPassword());
 
         try {
-            Registry registro = LocateRegistry.getRegistry("localhost",1099);
-
-            String[] services = registro.list();
-            System.out.println("Serviços disponíveis:");
-            for (String service : services) {
-                System.out.println(service);
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceFuncionario iFuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
+            
+            boolean autenticado = iFuncionario.autenticarFuncionario(cpf, senha);
+            if (autenticado) {
+                JOptionPane.showMessageDialog(this, "Login bem-sucedido!");
+                java.awt.EventQueue.invokeLater(new Runnable() {
+                    public void run() {
+                        new Client().setVisible(true);
+                    }
+                });
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "CPF ou senha incorretos.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-
-            InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
-            System.out.println(icliente);
-
-            icliente.inserirCliente(cliente);
-
-        } catch(Exception e) {
-            System.out.println(e);
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Erro ao conectar com o servidor.", "Erro", JOptionPane.ERROR_MESSAGE);
         }
+        
+    }//GEN-LAST:event_loginButtonActionPerformed
 
-    }//GEN-LAST:event_ButtonActionPerformed
+    private void cpfFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cpfFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cpfFieldActionPerformed
+
+    private void senhaFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_senhaFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_senhaFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -153,15 +198,18 @@ public class Client extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new Login().setVisible(true);
-                
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton Button;
+    private javax.swing.JTextField cpfField;
+    private javax.swing.JLabel cpfLabel;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JButton loginButton;
+    private javax.swing.JPasswordField senhaField;
+    private javax.swing.JLabel senhaLabel;
     // End of variables declaration//GEN-END:variables
 }
