@@ -42,7 +42,7 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
         jTextField2.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
         jButton1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(153, 255, 153));
+        jButton1.setForeground(new java.awt.Color(51, 102, 0));
         jButton1.setText("Editar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
