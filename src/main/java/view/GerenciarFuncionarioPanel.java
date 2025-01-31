@@ -34,7 +34,7 @@ public class GerenciarFuncionarioPanel extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Buscar cliente");
+        jLabel1.setText("Buscar funcionário");
 
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel2.setText("Nome:");
@@ -42,7 +42,7 @@ public class GerenciarFuncionarioPanel extends javax.swing.JPanel {
         jTextField2.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
         jButton1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 51, 51));
+        jButton1.setForeground(new java.awt.Color(153, 255, 153));
         jButton1.setText("Editar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -51,7 +51,7 @@ public class GerenciarFuncionarioPanel extends javax.swing.JPanel {
         });
 
         jButton2.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(102, 255, 102));
+        jButton2.setForeground(new java.awt.Color(255, 51, 51));
         jButton2.setText("Excluir");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
