@@ -34,7 +34,7 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
 
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Buscar cliente");
+        jLabel1.setText("Buscar médico parceiro");
 
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel2.setText("Nome:");

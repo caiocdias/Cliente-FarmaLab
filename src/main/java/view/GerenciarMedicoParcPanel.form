@@ -67,7 +67,7 @@
           <Font name="Liberation Sans" size="24" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="Buscar cliente"/>
+        <Property name="text" type="java.lang.String" value="Buscar m&#xe9;dico parceiro"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
