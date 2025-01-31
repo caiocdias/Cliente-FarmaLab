@@ -123,7 +123,7 @@ public class MainFrame extends javax.swing.JFrame {
         panelMap.put("Cadastrar Médico Parceiro", new CadastrarMedicoParcPanel());
         panelMap.put("Gerenciar Médico Parceiro", new GerenciarMedicoParcPanel());
 
-        //panelMap.put("Cadastrar Orçamento", new CadastrarOrcamentoPanel());
+        panelMap.put("Cadastrar Orçamento", new CadastrarOrcamentoPanel());
         //panelMap.put("Gerenciar Orçamento", new GerenciarOrcamentoPanel());
         
         //panelMap.put("Cadastrar Pedido", new CadastrarPedidoPanel());
