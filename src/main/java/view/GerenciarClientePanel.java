@@ -5,8 +5,6 @@
 package view;
 
 import controller.InterfaceCliente;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseEvent;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -23,7 +21,6 @@ import model.Cliente;
 public class GerenciarClientePanel extends javax.swing.JPanel {
 
     DefaultListModel MODELO;
-    int Enter = 0;
     List<Cliente> clientes = new ArrayList<>();
     Integer [] ids;
     
@@ -105,7 +102,7 @@ public class GerenciarClientePanel extends javax.swing.JPanel {
         confirmarButton = new javax.swing.JButton();
         excluirButton = new javax.swing.JButton();
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar Cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
 
         PesquisaNome.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         PesquisaNome.addActionListener(new java.awt.event.ActionListener() {
@@ -198,7 +195,7 @@ public class GerenciarClientePanel extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel5)
                                 .addGap(18, 18, 18)
-                                .addComponent(telefoneField, javax.swing.GroupLayout.DEFAULT_SIZE, 138, Short.MAX_VALUE))
+                                .addComponent(telefoneField, javax.swing.GroupLayout.DEFAULT_SIZE, 336, Short.MAX_VALUE))
                             .addComponent(nomeField))))
                 .addContainerGap())
         );
@@ -233,7 +230,7 @@ public class GerenciarClientePanel extends javax.swing.JPanel {
 
         excluirButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         excluirButton.setForeground(new java.awt.Color(255, 51, 51));
-        excluirButton.setText("Excluir cliente");
+        excluirButton.setText("Desabilitar cliente");
         excluirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 excluirButtonActionPerformed(evt);
@@ -316,7 +313,7 @@ public class GerenciarClientePanel extends javax.swing.JPanel {
                     icliente.desativarCliente(ids[indice]);
                     JOptionPane.showMessageDialog(null, "Cliente excluído com sucesso!");
                     limparCampos();
-                    ListaDePesquisa(); // Atualiza a lista após a exclusão
+                    ListaDePesquisa();
                 } catch (RemoteException | NotBoundException e) {
                     JOptionPane.showMessageDialog(null, "Erro ao excluir cliente: " + e.getMessage());
                 }

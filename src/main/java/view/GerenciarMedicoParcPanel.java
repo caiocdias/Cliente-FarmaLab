@@ -4,17 +4,86 @@
  */
 package view;
 
+import controller.InterfaceMedicoParceiro;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
+import model.MedicoParceiro;
+
 /**
  *
  * @author Isabely
  */
 public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
 
-    /**
-     * Creates new form ClientePanel
-     */
+    DefaultListModel MODELO;
+    List<MedicoParceiro> medicos = new ArrayList<>();
+    Integer [] ids;
+    
     public GerenciarMedicoParcPanel() {
         initComponents();
+        Lista.setVisible(false);
+        MODELO = new DefaultListModel();
+        Lista.setModel(MODELO);
+        
+        
+    }
+    
+    public void ListaDePesquisa() {
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
+            medicos = imedico.buscarMedicosParceirosPorNome(PesquisaNome.getText());
+
+            MODELO.removeAllElements();
+            ids = new Integer[medicos.size()];
+            
+            for (int i = 0; i < medicos.size(); i++) {
+                MedicoParceiro medico = medicos.get(i);
+                MODELO.addElement(medico.getNome());
+                ids[i] = medico.getId();
+            }
+            
+            Lista.setVisible(!medicos.isEmpty());
+            
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar medico parceiro: " + e.getMessage());
+        }
+    }
+
+    public void MostraPesquisa() {
+        int indice = Lista.getSelectedIndex();
+        if (indice >= 0) {
+            try{
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
+                MedicoParceiro medico = imedico.obterMedicoParceiro(ids[indice], null);
+                if (medico != null) {
+                    nomeField.setText(medico.getNome());
+                    CpfField.setText(medico.getCpf());
+                    telefoneField.setText(medico.getTelefone());
+                    enderecoField.setText(medico.getEndereco());
+                    estadoComboBox.setSelectedItem(medico.getEstado());
+                    CrmTextPane.setText(medico.getCrm());
+                }
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar funcionario: " + e.getMessage());
+            }
+        }
+    }
+    
+    private void limparCampos() {
+        nomeField.setText("");
+        CpfField.setText("");
+        telefoneField.setText("");
+        enderecoField.setText("");
+        estadoComboBox.setSelectedIndex(0);
+        CrmTextPane.setText("");
     }
 
     /**
@@ -26,9 +95,6 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
-        nomeBuscaTextField = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         nomeField = new javax.swing.JTextField();
@@ -43,42 +109,12 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         CrmTextPane = new javax.swing.JTextPane();
         jLabel7 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        estadoComboBox = new javax.swing.JComboBox<>();
         confirmarButton = new javax.swing.JButton();
         excluirButton = new javax.swing.JButton();
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar médico parceiro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
-
-        jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        jLabel2.setText("Nome:");
-
-        nomeBuscaTextField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        nomeBuscaTextField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nomeBuscaTextFieldActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
-                .addComponent(jLabel2)
-                .addGap(18, 18, 18)
-                .addComponent(nomeBuscaTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 701, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(nomeBuscaTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(36, Short.MAX_VALUE))
-        );
+        jPanel5 = new javax.swing.JPanel();
+        PesquisaNome = new javax.swing.JTextField();
+        Lista = new javax.swing.JList<>();
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Edição", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
 
@@ -111,7 +147,7 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
         jLabel7.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel7.setText("Estado:");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MS", "MT", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO" }));
+        estadoComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MS", "MT", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -139,7 +175,7 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(jLabel5)
                                         .addGap(18, 18, 18)
-                                        .addComponent(telefoneField))
+                                        .addComponent(telefoneField, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE))
                                     .addComponent(nomeField)))))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(22, 22, 22)
@@ -149,7 +185,7 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jComboBox1, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(estadoComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
@@ -177,7 +213,7 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
                         .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel10, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(estadoComboBox, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(38, Short.MAX_VALUE))
         );
 
@@ -199,6 +235,54 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
             }
         });
 
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar médico parceiro", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
+
+        PesquisaNome.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+        PesquisaNome.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PesquisaNomeActionPerformed(evt);
+            }
+        });
+        PesquisaNome.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                PesquisaNomeKeyReleased(evt);
+            }
+        });
+
+        Lista.setBorder(null);
+        Lista.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                ListaListaMousePressed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(PesquisaNome)
+                .addContainerGap())
+            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(Lista, javax.swing.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(PesquisaNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(109, Short.MAX_VALUE))
+            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addGap(49, 49, 49)
+                    .addComponent(Lista, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -210,57 +294,118 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(confirmarButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(excluirButton))
-                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(excluirButton)))
                 .addContainerGap())
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(22, 22, 22)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addContainerGap(207, Short.MAX_VALUE)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(confirmarButton)
                     .addComponent(excluirButton))
                 .addGap(14, 14, 14))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(394, Short.MAX_VALUE)))
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void nomeBuscaTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nomeBuscaTextFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_nomeBuscaTextFieldActionPerformed
-
     private void confirmarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmarButtonActionPerformed
-        // TODO add your handling code here:
+        int indice = Lista.getSelectedIndex();
+        if (indice >= 0) {
+            try {
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
+                
+                MedicoParceiro medico = new MedicoParceiro();
+                medico.setId(ids[indice]);
+                medico.setNome(nomeField.getText());
+                medico.setCpf(CpfField.getText());
+                medico.setTelefone(telefoneField.getText());
+                medico.setEndereco(enderecoField.getText());
+                medico.setCrm(CrmTextPane.getText());
+                medico.setEstado(estadoComboBox.getName());
+                
+                imedico.atualizarMedicoParceiro(medico);
+                JOptionPane.showMessageDialog(null, "Médico parceiro atualizado com sucesso!");
+                limparCampos();
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao atualizar médico parceiro: " + e.getMessage());
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Nenhum médico parceiro selecionado!");
+        }
     }//GEN-LAST:event_confirmarButtonActionPerformed
 
     private void excluirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluirButtonActionPerformed
-        // TODO add your handling code here:
+        int indice = Lista.getSelectedIndex();
+        if (indice >= 0) {
+            int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir este médico parceiro?", "Confirmação", JOptionPane.YES_NO_OPTION);
+            if (confirmacao == JOptionPane.YES_OPTION) {
+                try {
+                    Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                    InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
+                    
+                    imedico.desativarMedicoParceiro(ids[indice]);
+                    JOptionPane.showMessageDialog(null, "Médico parceiro excluído com sucesso!");
+                    limparCampos();
+                    ListaDePesquisa();
+                } catch (RemoteException | NotBoundException e) {
+                    JOptionPane.showMessageDialog(null, "Erro ao excluir médico parceiro: " + e.getMessage());
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Nenhum funcionario selecionado!");
+        }
     }//GEN-LAST:event_excluirButtonActionPerformed
+
+    private void PesquisaNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeActionPerformed
+        
+        Lista.setVisible(false);
+        
+    }//GEN-LAST:event_PesquisaNomeActionPerformed
+
+    private void PesquisaNomeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeKeyReleased
+        ListaDePesquisa();
+    }//GEN-LAST:event_PesquisaNomeKeyReleased
+
+    private void ListaListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaListaMousePressed
+        MostraPesquisa();
+        
+        Lista.setVisible(false);
+        
+    }//GEN-LAST:event_ListaListaMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField CpfField;
     private javax.swing.JTextPane CrmTextPane;
+    private javax.swing.JList<String> Lista;
+    private javax.swing.JTextField PesquisaNome;
     private javax.swing.JButton confirmarButton;
     private javax.swing.JTextField enderecoField;
+    private javax.swing.JComboBox<String> estadoComboBox;
     private javax.swing.JButton excluirButton;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextField nomeBuscaTextField;
     private javax.swing.JTextField nomeField;
     private javax.swing.JTextField telefoneField;
     // End of variables declaration//GEN-END:variables

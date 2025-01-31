@@ -11,6 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import model.MedicoParceiro;
 
 /**
@@ -187,11 +188,14 @@ public class CadastrarMedicoParcPanel extends javax.swing.JPanel {
         medico.setTelefone(telefoneTextField.getText());
         medico.setCrm(CrmTextPane.getText());
         medico.setEstado(estadoComboBox.getName());
+        medico.setHabilitado(true);
         
         try {
             Registry registro = LocateRegistry.getRegistry("localhost",1099);
-            InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("Cliente");
+            InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
             imedico.inserirMedicoParceiro(medico);
+            JOptionPane.showMessageDialog(null, "Médico parceiro inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            limparCampos();
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
         } 

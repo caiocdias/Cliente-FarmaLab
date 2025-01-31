@@ -164,6 +164,7 @@ public class CadastrarClientePanel extends javax.swing.JPanel {
         cliente.setCpf(CpfField.getText());
         cliente.setEndereco(enderecoField.getText());
         cliente.setTelefone(telefoneField.getText());
+        cliente.setHabilitado(true);
         
         try {
             Registry registro = LocateRegistry.getRegistry("localhost",1099);

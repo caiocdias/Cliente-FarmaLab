@@ -207,6 +207,7 @@ public class CadastrarFuncionarioPanel extends javax.swing.JPanel {
         funcionario.setTelefone(telefoneField.getText());
         funcionario.setCargo(cargoComboBox1.getName());
         funcionario.setPassword(senhaTextPane3.getText());
+        funcionario.setHabilitado(true);
         float salario = Float.parseFloat(salarioTextPane2.getText());
         funcionario.setSalario(salario);
         
@@ -214,7 +215,7 @@ public class CadastrarFuncionarioPanel extends javax.swing.JPanel {
             Registry registro = LocateRegistry.getRegistry("localhost",1099);
             InterfaceFuncionario ifuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
             ifuncionario.inserirFuncionario(funcionario);
-            JOptionPane.showMessageDialog(null, "Cliente inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Funcionário inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limparCampos();
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
