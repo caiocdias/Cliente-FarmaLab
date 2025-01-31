@@ -3,6 +3,8 @@ package view;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import javax.swing.*;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 /**
@@ -10,11 +12,11 @@ import java.awt.*;
  * @author crism
  */
 public class Client extends javax.swing.JFrame {
-    /**
-     * Creates new form Cliente
-     */
+    private final Map<String, JPanel> panelMap = new HashMap<>();
+    
     public Client() {
         initComponents();
+        initPanels();
     }
 
     /**
@@ -110,6 +112,31 @@ public class Client extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
+    private void initPanels() {
+        
+        panelMap.put("Cadastrar Cliente", new CadastrarClientePanel());
+        //panelMap.put("Gerenciar Cliente", new GerenciarClientePanel());
+        //panelMap.put("Editar Cliente", new EditarClientePanel());
+        //panelMap.put("Remover Cliente", new RemoverClientePanel());
+
+        panelMap.put("Cadastrar Funcionário", new CadastrarFuncionarioPanel());
+        //panelMap.put("Gerenciar Funcionário", new GerenciarFuncionarioPanel());
+        //panelMap.put("Editar Funcionário", new EditarFuncionarioPanel());
+        //panelMap.put("Remover Funcionário", new RemoverFuncionarioPanel());
+
+        //panelMap.put("Cadastrar Pedido", new CadastrarPedidoPanel());
+        //panelMap.put("Gerenciar Pedido", new GerenciarPedidoPanel());
+        //panelMap.put("Editar Pedido", new EditarPedidoPanel());
+        //panelMap.put("Remover Pedido", new RemoverPedidoPanel());
+
+        //panelMap.put("Cadastrar Venda", new CadastrarVendaPanel());
+        //panelMap.put("Gerenciar Venda", new GerenciarVendaPanel());
+        //panelMap.put("Editar Venda", new EditarVendaPanel());
+        //panelMap.put("Remover Venda", new RemoverVendaPanel());
+
+        //panelMap.put("Área do Manipulador", new AreaManipuladorPanel());
+    }
+    
     private void jTree2ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree2ValueChanged
         DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode) jTree2.getLastSelectedPathComponent();
 
@@ -127,7 +154,7 @@ public class Client extends javax.swing.JFrame {
         JLabel label = new JLabel(titulo);
         add(label);
 
-        JButton botaoFechar = new JButton("x");
+        JButton botaoFechar = new JButton();
         botaoFechar.setMargin(new Insets(0, 2, 0, 2)); 
         botaoFechar.setPreferredSize(new Dimension(12, 12)); 
         botaoFechar.setFocusable(false);
@@ -148,14 +175,18 @@ public class Client extends javax.swing.JFrame {
     private void abrirAba(String titulo) {
         int index = jTabbedPane1.indexOfTab(titulo);
         if (index == -1) { 
-            JPanel conteudo = new JPanel();
-            conteudo.add(new JLabel("Conteúdo da aba: " + titulo));
-
+            JPanel conteudo = panelMap.getOrDefault(titulo, criarAbaGenerica(titulo));
             jTabbedPane1.addTab(titulo, conteudo);
             int novaAbaIndex = jTabbedPane1.indexOfTab(titulo);
             jTabbedPane1.setTabComponentAt(novaAbaIndex, new AbaComBotao(jTabbedPane1, titulo));
         }
         jTabbedPane1.setSelectedIndex(jTabbedPane1.indexOfTab(titulo));
+    }
+    
+    private JPanel criarAbaGenerica(String titulo) {
+        JPanel defaultPanel = new JPanel();
+        defaultPanel.add(new JLabel("Conteúdo não definido para: " + titulo));
+        return defaultPanel;
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
