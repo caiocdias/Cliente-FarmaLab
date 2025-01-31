@@ -97,7 +97,8 @@ public class CadastrarFuncionarioPanel extends javax.swing.JPanel {
         cargoComboBox1.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         cargoComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Funcionário comum", "Administrador" }));
 
-        jButton1.setFont(new java.awt.Font("Liberation Sans", 0, 24)); // NOI18N
+        jButton1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(51, 153, 255));
         jButton1.setText("Salvar");
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
         jButton1.addActionListener(new java.awt.event.ActionListener() {
