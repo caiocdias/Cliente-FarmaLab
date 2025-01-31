@@ -289,6 +289,7 @@ public class GerenciarClientePanel extends javax.swing.JPanel {
                 cliente.setCpf(CpfField.getText());
                 cliente.setTelefone(telefoneField.getText());
                 cliente.setEndereco(enderecoField.getText());
+                cliente.setHabilitado(true);
                 
                 icliente.atualizarCliente(cliente);
                 JOptionPane.showMessageDialog(null, "Cliente atualizado com sucesso!");
