@@ -196,7 +196,15 @@ public class CadastrarMedicoParcPanel extends javax.swing.JPanel {
             Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }//GEN-LAST:event_jButton1ActionPerformed
-
+    
+    private void limparCampos() {
+        nomeField.setText("");
+        CpfField.setText("");
+        telefoneTextField.setText("");
+        enderecoField.setText("");
+        CrmTextPane.setText("");
+        estadoComboBox.setSelectedIndex(0);
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField CpfField;

@@ -11,6 +11,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import model.Cliente;
 
 /**
@@ -168,12 +169,20 @@ public class CadastrarClientePanel extends javax.swing.JPanel {
             Registry registro = LocateRegistry.getRegistry("localhost",1099);
             InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
             icliente.inserirCliente(cliente);
+            JOptionPane.showMessageDialog(null, "Cliente inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            limparCampos();
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
         } 
     }//GEN-LAST:event_jButton1ActionPerformed
 
-
+    private void limparCampos() {
+        nomeField.setText("");
+        CpfField.setText("");
+        telefoneField.setText("");
+        enderecoField.setText("");
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField CpfField;
     private javax.swing.JTextField enderecoField;
