@@ -4,6 +4,15 @@
  */
 package view;
 
+import controller.InterfaceFuncionario;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.Funcionario;
+
 /**
  *
  * @author Isabely
@@ -54,11 +63,6 @@ public class CadastrarFuncionarioPanel extends javax.swing.JPanel {
         jLabel2.setText("Nome:");
 
         enderecoField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        enderecoField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                enderecoFieldActionPerformed(evt);
-            }
-        });
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel3.setText("Endereço:");
@@ -192,12 +196,25 @@ public class CadastrarFuncionarioPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void enderecoFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enderecoFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_enderecoFieldActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+        
+        Funcionario funcionario = new Funcionario();
+        funcionario.setNome(nomeField.getText());
+        funcionario.setCpf(CpfField.getText());
+        funcionario.setEndereco(enderecoField.getText());
+        funcionario.setTelefone(telefoneField.getText());
+        funcionario.setCargo(cargoComboBox1.getName());
+        funcionario.setPassword(senhaTextPane3.getText());
+        float salario = Float.parseFloat(salarioTextPane2.getText());
+        funcionario.setSalario(salario);
+        
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost",1099);
+            InterfaceFuncionario ifuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
+            ifuncionario.inserirFuncionario(funcionario);
+        } catch (RemoteException | NotBoundException ex) {
+            Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
