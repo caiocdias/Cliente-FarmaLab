@@ -1,5 +1,6 @@
 package view;
 
+import controller.InterfaceCliente;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import javax.swing.*;
@@ -111,6 +112,7 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void initPanels() {
+        InterfaceCliente clienteService = null;
         
         panelMap.put("Cadastrar Cliente", new CadastrarClientePanel());
         panelMap.put("Gerenciar Cliente", new GerenciarClientePanel());

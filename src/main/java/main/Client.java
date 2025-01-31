@@ -8,7 +8,6 @@ import controller.InterfaceFuncionario;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import javax.swing.JOptionPane;
-import model.Cliente;
 import view.MainFrame;
 /**
  *
