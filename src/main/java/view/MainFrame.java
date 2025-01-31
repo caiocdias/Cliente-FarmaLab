@@ -7,14 +7,15 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
+
 /**
  *
- * @author crism
+ * @author Isabely
  */
-public class Client extends javax.swing.JFrame {
+public class MainFrame extends javax.swing.JFrame {
     private final Map<String, JPanel> panelMap = new HashMap<>();
     
-    public Client() {
+    public MainFrame() {
         initComponents();
         initPanels();
     }
@@ -35,7 +36,6 @@ public class Client extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setName("JFrame"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(600, 456));
 
         jSplitPane1.setDividerLocation(200);
 
@@ -45,19 +45,17 @@ public class Client extends javax.swing.JFrame {
         treeNode2.add(treeNode3);
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Cliente");
         treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Editar Cliente");
-        treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Remover Cliente");
-        treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Funcionários");
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Funcionário");
         treeNode2.add(treeNode3);
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Funcionário");
         treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Editar Funcionário");
+        treeNode1.add(treeNode2);
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Médicos Parceiros");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Médico Parceiro");
         treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Remover Funcionário");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Médico Parceiro");
         treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Pedidos");
@@ -65,9 +63,11 @@ public class Client extends javax.swing.JFrame {
         treeNode2.add(treeNode3);
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Pedido");
         treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Editar Pedido");
+        treeNode1.add(treeNode2);
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Orçamentos");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Orçamento");
         treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Remover Pedido");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Orçamento");
         treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Vendas");
@@ -75,9 +75,7 @@ public class Client extends javax.swing.JFrame {
         treeNode2.add(treeNode3);
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Venda");
         treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Editar Venda");
-        treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Remover Venda");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Imprimir Nota Fiscal");
         treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Área do Manipulador");
@@ -115,24 +113,22 @@ public class Client extends javax.swing.JFrame {
     private void initPanels() {
         
         panelMap.put("Cadastrar Cliente", new CadastrarClientePanel());
-        //panelMap.put("Gerenciar Cliente", new GerenciarClientePanel());
-        //panelMap.put("Editar Cliente", new EditarClientePanel());
-        //panelMap.put("Remover Cliente", new RemoverClientePanel());
+        panelMap.put("Gerenciar Cliente", new GerenciarClientePanel());
 
         panelMap.put("Cadastrar Funcionário", new CadastrarFuncionarioPanel());
-        //panelMap.put("Gerenciar Funcionário", new GerenciarFuncionarioPanel());
-        //panelMap.put("Editar Funcionário", new EditarFuncionarioPanel());
-        //panelMap.put("Remover Funcionário", new RemoverFuncionarioPanel());
+        panelMap.put("Gerenciar Funcionário", new GerenciarFuncionarioPanel());
+        
+        panelMap.put("Cadastrar Médico Parceiro", new CadastrarMedicoParcPanel());
+        panelMap.put("Gerenciar Médico Parceiro", new GerenciarMedicoParcPanel());
 
+        //panelMap.put("Cadastrar Orçamento", new CadastrarOrcamentoPanel());
+        //panelMap.put("Gerenciar Orçamento", new GerenciarOrcamentoPanel());
+        
         //panelMap.put("Cadastrar Pedido", new CadastrarPedidoPanel());
         //panelMap.put("Gerenciar Pedido", new GerenciarPedidoPanel());
-        //panelMap.put("Editar Pedido", new EditarPedidoPanel());
-        //panelMap.put("Remover Pedido", new RemoverPedidoPanel());
 
         //panelMap.put("Cadastrar Venda", new CadastrarVendaPanel());
         //panelMap.put("Gerenciar Venda", new GerenciarVendaPanel());
-        //panelMap.put("Editar Venda", new EditarVendaPanel());
-        //panelMap.put("Remover Venda", new RemoverVendaPanel());
 
         //panelMap.put("Área do Manipulador", new AreaManipuladorPanel());
     }

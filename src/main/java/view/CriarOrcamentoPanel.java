@@ -4,15 +4,6 @@
  */
 package view;
 
-import controller.InterfaceFuncionario;
-import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import model.Funcionario;
-
 /**
  *
  * @author Isabely
@@ -196,23 +187,6 @@ public class CriarOrcamentoPanel extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         
-        Funcionario funcionario = new Funcionario();
-        funcionario.setNome(nomeField.getText());
-        funcionario.setCpf(CpfField.getText());
-        funcionario.setEndereco(enderecoField.getText());
-        funcionario.setTelefone(telefoneField.getText());
-        funcionario.setCargo(cargoComboBox1.getName());
-        funcionario.setPassword(senhaTextPane3.getText());
-        float salario = Float.parseFloat(salarioTextPane2.getText());
-        funcionario.setSalario(salario);
-        
-        try {
-            Registry registro = LocateRegistry.getRegistry("localhost",1099);
-            InterfaceFuncionario ifuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
-            ifuncionario.inserirFuncionario(funcionario);
-        } catch (RemoteException | NotBoundException ex) {
-            Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
-        } 
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
