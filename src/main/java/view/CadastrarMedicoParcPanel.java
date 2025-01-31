@@ -4,6 +4,15 @@
  */
 package view;
 
+import controller.InterfaceMedicoParceiro;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import model.MedicoParceiro;
+
 /**
  *
  * @author Isabely
@@ -52,11 +61,6 @@ public class CadastrarMedicoParcPanel extends javax.swing.JPanel {
         jLabel2.setText("Nome:");
 
         enderecoField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        enderecoField.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                enderecoFieldActionPerformed(evt);
-            }
-        });
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel3.setText("Endereço:");
@@ -86,6 +90,11 @@ public class CadastrarMedicoParcPanel extends javax.swing.JPanel {
         jButton1.setForeground(new java.awt.Color(51, 153, 255));
         jButton1.setText("Salvar");
         jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.LEADING);
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         CrmTextPane.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jScrollPane1.setViewportView(CrmTextPane);
@@ -171,9 +180,23 @@ public class CadastrarMedicoParcPanel extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void enderecoFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enderecoFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_enderecoFieldActionPerformed
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        MedicoParceiro medico = new MedicoParceiro();
+        medico.setNome(nomeField.getText());
+        medico.setCpf(CpfField.getText());
+        medico.setEndereco(enderecoField.getText());
+        medico.setTelefone(telefoneTextField.getText());
+        medico.setCrm(CrmTextPane.getText());
+        medico.setEstado(estadoTextPane.getText());
+        
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost",1099);
+            InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("Cliente");
+            imedico.inserirMedicoParceiro(medico);
+        } catch (RemoteException | NotBoundException ex) {
+            Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
