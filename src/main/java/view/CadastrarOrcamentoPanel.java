@@ -4,7 +4,9 @@
  */
 package view;
 
+import controller.InterfaceCliente;
 import controller.InterfaceFuncionario;
+import controller.InterfaceUnidade;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -51,6 +53,27 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
         ListaUnidade.setModel(MODELOunidade);
     }
     
+    public void ListaDePesquisaUnidade() {
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+            unidades = iunidade.buscarUnidadePorNome(PesquisaNomeUnidade.getText());
+
+            MODELOunidade.removeAllElements();
+            idsUnidade = new Integer[unidades.size()];
+            
+            for (int i = 0; i < unidades.size(); i++) {
+                Unidade unidade = unidades.get(i);
+                MODELOunidade.addElement(unidade.getNome());
+                idsCliente[i] = unidade.getId();
+            }
+            
+            ListaUnidade.setVisible(!clientes.isEmpty());
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar clientes: " + e.getMessage());
+        }
+    }
+    
     public void ListaDePesquisaFuncionario() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
@@ -69,6 +92,27 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
             ListaFuncionario.setVisible(!funcionarios.isEmpty());
         } catch (RemoteException | NotBoundException e) {
             JOptionPane.showMessageDialog(null, "Erro ao listar funcionario: " + e.getMessage());
+        }
+    }
+    
+    public void ListaDePesquisaCliente() {
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
+            clientes = icliente.buscarClientesPorNome(PesquisaNomeCliente.getText());
+
+            MODELOcliente.removeAllElements();
+            idsCliente = new Integer[clientes.size()];
+            
+            for (int i = 0; i < clientes.size(); i++) {
+                Cliente cliente = clientes.get(i);
+                MODELOcliente.addElement(cliente.getNome());
+                idsCliente[i] = cliente.getId();
+            }
+            
+            ListaCliente.setVisible(!clientes.isEmpty());
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar clientes: " + e.getMessage());
         }
     }
 
@@ -219,7 +263,7 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PesquisaNomeFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
+                    .addComponent(PesquisaNomeFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, 431, Short.MAX_VALUE)
                     .addComponent(ListaFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -228,7 +272,7 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addComponent(PesquisaNomeFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ListaFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(ListaFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -244,11 +288,6 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
 
         statusComboBox.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Em análise", "Parcialmente aprovado", "Aprovado", "Rejeitado", "    " }));
-        statusComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                statusComboBoxActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -259,10 +298,10 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -335,45 +374,41 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeUnidadeActionPerformed
 
     private void PesquisaNomeUnidadeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeUnidadeKeyReleased
-        //ListaDePesquisa();
+        ListaDePesquisaUnidade();
     }//GEN-LAST:event_PesquisaNomeUnidadeKeyReleased
 
     private void ListaUnidadeListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaUnidadeListaMousePressed
-        //MostraPesquisa();
-        //ListaUnidade.setVisible(false);
+        ListaUnidade.setVisible(false);
     }//GEN-LAST:event_ListaUnidadeListaMousePressed
 
     private void PesquisaNomeClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteActionPerformed
-        // TODO add your handling code here:
+        ListaCliente.setVisible(false);
     }//GEN-LAST:event_PesquisaNomeClienteActionPerformed
 
     private void PesquisaNomeClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteKeyReleased
-        // TODO add your handling code here:
+        ListaDePesquisaCliente();
     }//GEN-LAST:event_PesquisaNomeClienteKeyReleased
 
     private void ListaClienteListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaClienteListaMousePressed
-        // TODO add your handling code here:
+        ListaCliente.setVisible(false);
     }//GEN-LAST:event_ListaClienteListaMousePressed
 
     private void PesquisaNomeFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeFuncionarioActionPerformed
-        ListaDePesquisaFuncionario();
+        ListaFuncionario.setVisible(false);
+        
     }//GEN-LAST:event_PesquisaNomeFuncionarioActionPerformed
 
     private void PesquisaNomeFuncionarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeFuncionarioKeyReleased
-        // TODO add your handling code here:
+        ListaDePesquisaFuncionario();
     }//GEN-LAST:event_PesquisaNomeFuncionarioKeyReleased
-
-    private void ListaFuncionarioListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaFuncionarioListaMousePressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ListaFuncionarioListaMousePressed
 
     private void SalvarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalvarButtonActionPerformed
 
     }//GEN-LAST:event_SalvarButtonActionPerformed
 
-    private void statusComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_statusComboBoxActionPerformed
+    private void ListaFuncionarioListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaFuncionarioListaMousePressed
+        ListaFuncionario.setVisible(false);
+    }//GEN-LAST:event_ListaFuncionarioListaMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
