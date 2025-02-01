@@ -38,7 +38,7 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="jLabel8" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="enderecoField2" min="-2" pref="313" max="-2" attributes="0"/>
+                              <Component id="complementoField" min="-2" pref="313" max="-2" attributes="0"/>
                           </Group>
                           <Component id="ruaField" max="32767" attributes="0"/>
                           <Group type="102" attributes="0">
@@ -50,7 +50,7 @@
                               <EmptySpace max="-2" attributes="0"/>
                               <Component id="jLabel5" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="telefoneField" min="-2" pref="264" max="-2" attributes="0"/>
+                              <Component id="cidadeField" min="-2" pref="264" max="-2" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -80,7 +80,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="jLabel4" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="CepField" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="telefoneField" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cidadeField" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel7" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="estadoComboBox" alignment="3" min="-2" pref="30" max="-2" attributes="0"/>
                   <Component id="jLabel5" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -97,7 +97,7 @@
                       <Component id="jLabel6" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" alignment="1" groupAlignment="3" attributes="0">
-                      <Component id="enderecoField2" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="complementoField" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="jLabel8" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
@@ -168,7 +168,7 @@
         <Property name="text" type="java.lang.String" value="Cidade:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="telefoneField">
+    <Component class="javax.swing.JTextField" name="cidadeField">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Liberation Sans" size="18" style="0"/>
@@ -259,7 +259,7 @@
         <Property name="text" type="java.lang.String" value="Complemento:"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="enderecoField2">
+    <Component class="javax.swing.JTextField" name="complementoField">
       <Properties>
         <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
           <Font name="Liberation Sans" size="18" style="0"/>

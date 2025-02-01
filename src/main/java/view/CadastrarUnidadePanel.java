@@ -4,6 +4,14 @@
  */
 package view;
 
+import controller.InterfaceUnidade;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import model.Unidade;
 
 /**
@@ -34,7 +42,7 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
         jLabel4 = new javax.swing.JLabel();
         CepField = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
-        telefoneField = new javax.swing.JTextField();
+        cidadeField = new javax.swing.JTextField();
         ruaField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
@@ -42,7 +50,7 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         bairroField = new javax.swing.JTextField();
         jLabel8 = new javax.swing.JLabel();
-        enderecoField2 = new javax.swing.JTextField();
+        complementoField = new javax.swing.JTextField();
         nomeField = new javax.swing.JTextField();
 
         jButton1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -69,7 +77,7 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
         jLabel5.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel5.setText("Cidade:");
 
-        telefoneField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+        cidadeField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
         ruaField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
@@ -89,7 +97,7 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
         jLabel8.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         jLabel8.setText("Complemento:");
 
-        enderecoField2.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+        complementoField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
         nomeField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
@@ -117,7 +125,7 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(enderecoField2, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(complementoField, javax.swing.GroupLayout.PREFERRED_SIZE, 313, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(ruaField)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(CepField, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
@@ -128,7 +136,7 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel5)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(telefoneField, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                                .addComponent(cidadeField, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
@@ -149,7 +157,7 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(CepField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(telefoneField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(cidadeField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel7)
                     .addComponent(estadoComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
@@ -163,7 +171,7 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
                         .addComponent(bairroField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel6))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(enderecoField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(complementoField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel8)))
                 .addContainerGap(73, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -179,15 +187,17 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
         unidade.setNome(nomeField.getText());
         unidade.setCep(CepField.getText());
         unidade.setEstado(estadoComboBox.getName());
+        unidade.setRua(cidadeField.getText());
         unidade.setRua(ruaField.getText());
         unidade.setBairro(bairroField.getText());
+        unidade.setComplemento(complementoField.getText());
         unidade.setHabilitado(true);
         
         try {
             Registry registro = LocateRegistry.getRegistry("localhost",1099);
-            InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
-            icliente.inserirCliente(cliente);
-            JOptionPane.showMessageDialog(null, "Cliente inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+            iunidade.inserirUnidade(unidade);
+            JOptionPane.showMessageDialog(null, "Unidade inserida com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limparCampos();
         } catch (RemoteException | NotBoundException ex) {
             Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -196,15 +206,19 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
     
     private void limparCampos() {
         nomeField.setText("");
-        CpfField.setText("");
-        telefoneField.setText("");
+        CepField.setText("");
+        cidadeField.setText("");
         ruaField.setText("");
+        bairroField.setText("");
+        complementoField.setText("");
+        estadoComboBox.setSelectedIndex(0);
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField CepField;
     private javax.swing.JTextField bairroField;
-    private javax.swing.JTextField enderecoField2;
+    private javax.swing.JTextField cidadeField;
+    private javax.swing.JTextField complementoField;
     private javax.swing.JComboBox<String> estadoComboBox;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
@@ -217,6 +231,5 @@ public class CadastrarUnidadePanel extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JTextField nomeField;
     private javax.swing.JTextField ruaField;
-    private javax.swing.JTextField telefoneField;
     // End of variables declaration//GEN-END:variables
 }
