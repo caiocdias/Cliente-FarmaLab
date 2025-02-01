@@ -181,11 +181,11 @@ public class RelacionarUnidadeTributoPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeActionPerformed
 
     private void PesquisaNomeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeKeyReleased
-        ListaDePesquisa();
+        //ListaDePesquisa();
     }//GEN-LAST:event_PesquisaNomeKeyReleased
 
     private void ListaListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaListaMousePressed
-        MostraPesquisa();
+        //MostraPesquisa();
 
         Lista.setVisible(false);
 
