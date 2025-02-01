@@ -6,6 +6,7 @@ package view;
 
 import controller.InterfaceCliente;
 import controller.InterfaceFuncionario;
+import controller.InterfacePedido;
 import controller.InterfacePrescricao;
 import controller.InterfaceProduto;
 import controller.InterfaceTipoProduto;
@@ -16,10 +17,13 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import model.Cliente;
 import model.Funcionario;
+import model.Pedido;
 import model.Prescricao;
 import model.Produto;
 import model.TipoProduto;
@@ -135,22 +139,18 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
     public void ListaDePesquisaTipoProduto() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            InterfaceTipoProduto itipo = (InterfaceTipoProduto) registro.lookup("Tipo Produto");
+            InterfaceTipoProduto itipo = (InterfaceTipoProduto) registro.lookup("TipoProduto");
             tipoProdutos = itipo.buscarTipoProdutoPorNome(PesquisaNomeProduto.getText());
             
-            InterfaceProduto iproduto = (InterfaceProduto) registro.lookup("Produto");
-
-            MODELOcliente.removeAllElements();
+            MODELOtipoproduto.removeAllElements();
             idsTipoProduto = new Integer[tipoProdutos.size()];
             
             for (int i = 0; i < tipoProdutos.size(); i++) {
                 TipoProduto tipoProduto = tipoProdutos.get(i);
-                MODELOcliente.addElement(tipoProduto.getNome());
-                idsCliente[i] = tipoProduto.getId();
+                MODELOtipoproduto.addElement(tipoProduto.getNome());
+                idsTipoProduto[i] = tipoProduto.getId();
             }
-            ListaCliente.setVisible(!clientes.isEmpty());
-            
-            
+            ListaProduto.setVisible(!tipoProdutos.isEmpty());
             
         } catch (RemoteException | NotBoundException e) {
             JOptionPane.showMessageDialog(null, "Erro ao listar produtos: " + e.getMessage());
@@ -159,41 +159,19 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
     
     
     
-    public void ListaDePesquisaPrescricao() {
-        try {
-            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            InterfacePrescricao iprescricao = (InterfacePrescricao) registro.lookup("Prescricao");
-
-            String crm = PesquisaNomePrescricao.getText();
-            if (crm.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Informe o CRM para buscar prescrições.");
-                return;
-            }
-            Prescricao prescricao = iprescricao.obterPrescricao(null, crm);
-
-            if (prescricao != null) {
-                PesquisaNomePrescricao.setText(prescricao.getCrm());
-            } else {
-                JOptionPane.showMessageDialog(null, "Nenhuma prescrição encontrada para o CRM informado.");
-            }
-
-        } catch (RemoteException | NotBoundException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao buscar prescrição: " + e.getMessage());
-        }
-    }
-    
-    public void MostraPesquisaProdutos() {
-        
+    public Produto MostraPesquisaProdutos() {
+        Produto produtoDisp = null;
+        TipoProduto tipoProduto = null;
         int indice = ListaProduto.getSelectedIndex();
         if (indice >= 0) {
             try{
                 Registry registro = LocateRegistry.getRegistry("localhost", 1099);
                 InterfaceTipoProduto itipo = (InterfaceTipoProduto) registro.lookup("Tipo Produto");
                 InterfaceProduto iproduto = (InterfaceProduto) registro.lookup("Produto");
-                TipoProduto tipoProduto = itipo.obterTipoProduto(idsTipoProduto[indice]);
+                tipoProduto = itipo.obterTipoProduto(idsTipoProduto[indice]);
                 if (tipoProduto != null) {
-                    PesquisaNomeCliente.setText(tipoProduto.getNome());
-                    Produto produtoDisp = iproduto.produtoDisponivel(tipoProduto.getId());
+                    PesquisaNomeProduto.setText(tipoProduto.getNome());
+                    produtoDisp = iproduto.produtoDisponivel(tipoProduto.getId());
                     System.out.println(produtoDisp);
                     if(produtoDisp == null){
                         Produto produto  = new Produto();
@@ -203,21 +181,26 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
                         produto.setEstoque(null);
                         produto.setTipo_produto(tipoProduto);
                         //produto.setPronta_entrega(ProntaEntregaCheckBox.getActionCommand());
+                        Carrinho.setText(tipoProduto.getNome());
+                        return produto;
                     }
                 }
             } catch (RemoteException | NotBoundException e) {
                 JOptionPane.showMessageDialog(null, "Erro ao buscar cliente: " + e.getMessage());
             }
         }
+        Carrinho.setText(tipoProduto.getNome());
+        return produtoDisp;
     }
     
-    public void MostraPesquisaCliente() {
+    public Cliente MostraPesquisaCliente() {
+        Cliente cliente = null;
         int indiceCliente = ListaCliente.getSelectedIndex();
         if (indiceCliente >= 0) {
             try{
                 Registry registro = LocateRegistry.getRegistry("localhost", 1099);
                 InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
-                Cliente cliente = icliente.obterCliente(idsCliente[indiceCliente], null);
+                cliente = icliente.obterCliente(idsCliente[indiceCliente], null);
                 if (cliente != null) {
                     PesquisaNomeCliente.setText(cliente.getNome());
                 }
@@ -225,17 +208,19 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(null, "Erro ao buscar cliente: " + e.getMessage());
             }
         }
+        return cliente;
     }
     
     
     
-    public void MostraPesquisaFuncionario() {
+    public Funcionario MostraPesquisaFuncionario() {
+        Funcionario funcionario = null;
         int indiceFuncionario = ListaFuncionario.getSelectedIndex();
         if (indiceFuncionario >= 0) {
             try{
                 Registry registro = LocateRegistry.getRegistry("localhost", 1099);
                 InterfaceFuncionario ifuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
-                Funcionario funcionario = ifuncionario.obterFuncionario(idsFuncionario[indiceFuncionario], null);
+                funcionario = ifuncionario.obterFuncionario(idsFuncionario[indiceFuncionario], null);
                 if (funcionario != null) {
                     PesquisaNomeFuncionario.setText(funcionario.getNome());
                 }
@@ -243,15 +228,17 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(null, "Erro ao buscar funcionario: " + e.getMessage());
             }
         }
+        return funcionario;
     }
     
-    public void MostraPesquisaUnidade() {
+    public Unidade MostraPesquisaUnidade() {
+        Unidade unidade = null;
         int indiceUnidade = ListaUnidade.getSelectedIndex();
         if (indiceUnidade >= 0) {
             try{
                 Registry registro = LocateRegistry.getRegistry("localhost", 1099);
                 InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
-                Unidade unidade = iunidade.obterUnidade(idsUnidade[indiceUnidade]);
+                unidade = iunidade.obterUnidade(idsUnidade[indiceUnidade]);
                 if (unidade != null) {
                     PesquisaNomeUnidade.setText(unidade.getNome());
                 }
@@ -259,6 +246,7 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(null, "Erro ao buscar unidade: " + e.getMessage());
             }
         }
+        return unidade;
     }
 
     private void limparCampos() {
@@ -286,15 +274,14 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
         PesquisaNomeFuncionario = new javax.swing.JTextField();
         ListaFuncionario = new javax.swing.JList<>();
         SalvarButton = new javax.swing.JButton();
-        jPanel7 = new javax.swing.JPanel();
-        PesquisaNomePrescricao = new javax.swing.JTextField();
-        ListaPrescricao = new javax.swing.JList<>();
         jLabel6 = new javax.swing.JLabel();
         statusComboBox = new javax.swing.JComboBox<>();
         ProntaEntregaCheckBox = new javax.swing.JCheckBox();
         jPanel8 = new javax.swing.JPanel();
         PesquisaNomeProduto = new javax.swing.JTextField();
         ListaProduto = new javax.swing.JList<>();
+        Carrinho = new javax.swing.JTextField();
+        jLabel7 = new javax.swing.JLabel();
 
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -422,7 +409,7 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
                 .addComponent(PesquisaNomeFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(ListaFuncionario, javax.swing.GroupLayout.PREFERRED_SIZE, 54, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(10, Short.MAX_VALUE))
         );
 
         SalvarButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -434,47 +421,6 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
                 SalvarButtonActionPerformed(evt);
             }
         });
-
-        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Prescrição", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18))); // NOI18N
-
-        PesquisaNomePrescricao.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        PesquisaNomePrescricao.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PesquisaNomePrescricaoActionPerformed(evt);
-            }
-        });
-        PesquisaNomePrescricao.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                PesquisaNomePrescricaoKeyReleased(evt);
-            }
-        });
-
-        ListaPrescricao.setBorder(null);
-        ListaPrescricao.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                ListaPrescricaoListaMousePressed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PesquisaNomePrescricao)
-                    .addComponent(ListaPrescricao, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel7Layout.createSequentialGroup()
-                .addComponent(PesquisaNomePrescricao, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ListaPrescricao, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Status:");
@@ -521,10 +467,15 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel8Layout.createSequentialGroup()
                 .addComponent(PesquisaNomeProduto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 8, Short.MAX_VALUE)
                 .addComponent(ListaProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(95, 95, 95))
+                .addContainerGap())
         );
+
+        Carrinho.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+
+        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel7.setText("Carrinho:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -543,18 +494,19 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
                                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addComponent(jPanel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(48, 48, 48)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addGap(37, 37, 37)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                                        .addComponent(jLabel7)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(Carrinho))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGap(0, 0, Short.MAX_VALUE)
                                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 284, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 303, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
                                         .addComponent(ProntaEntregaCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                         .addContainerGap())))
         );
@@ -563,25 +515,27 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(113, 113, 113)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
                             .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(ProntaEntregaCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
+                            .addComponent(ProntaEntregaCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
-                        .addComponent(jPanel8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel7)
+                            .addComponent(Carrinho, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(15, 33, Short.MAX_VALUE)
                 .addComponent(SalvarButton)
                 .addContainerGap())
         );
@@ -596,22 +550,9 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeUnidadeKeyReleased
 
     private void ListaUnidadeListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaUnidadeListaMousePressed
-        MostraPesquisaUnidade();
+        Unidade unidade = MostraPesquisaUnidade();
         ListaUnidade.setVisible(false);
     }//GEN-LAST:event_ListaUnidadeListaMousePressed
-
-    private void PesquisaNomeClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteActionPerformed
-        ListaCliente.setVisible(false);
-    }//GEN-LAST:event_PesquisaNomeClienteActionPerformed
-
-    private void PesquisaNomeClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteKeyReleased
-        ListaDePesquisaCliente();
-    }//GEN-LAST:event_PesquisaNomeClienteKeyReleased
-
-    private void ListaClienteListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaClienteListaMousePressed
-        MostraPesquisaCliente();
-        ListaCliente.setVisible(false);
-    }//GEN-LAST:event_ListaClienteListaMousePressed
 
     private void PesquisaNomeFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeFuncionarioActionPerformed
         ListaFuncionario.setVisible(false);
@@ -622,50 +563,72 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeFuncionarioKeyReleased
 
     private void ListaFuncionarioListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaFuncionarioListaMousePressed
-        MostraPesquisaFuncionario();
-        ListaFuncionario.setVisible(false);
+        Funcionario funcionario = MostraPesquisaFuncionario();
+        ListaFuncionario.setVisible(false);;
     }//GEN-LAST:event_ListaFuncionarioListaMousePressed
 
     private void SalvarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalvarButtonActionPerformed
-
+        Pedido pedido = new Pedido();
+        Cliente cliente = MostraPesquisaCliente();
+        Funcionario funcionario = MostraPesquisaFuncionario();
+        Unidade unidade = MostraPesquisaUnidade();
+        Produto produto = MostraPesquisaProdutos();
+        List <Produto> produtos = new ArrayList<>();
+        produtos.add(produto);
+        pedido.setCliente(cliente);
+        pedido.setFuncionario(funcionario);
+        pedido.setUnidade(unidade);
+        pedido.setProdutos(produtos);
+        //pedido.setStatus(statusComboBox.get);
+        //pedido.setPronta_entrega(ProntaEntregaCheckBox.get);
+        pedido.setHabilitado(true);
+        
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost",1099);
+            InterfacePedido ipedido = (InterfacePedido) registro.lookup("Pedido");
+            ipedido.inserirPedido(pedido);
+            JOptionPane.showMessageDialog(null, "Pedido inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            limparCampos();
+        } catch (RemoteException | NotBoundException ex) {
+            Logger.getLogger(CadastrarPedidoPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }//GEN-LAST:event_SalvarButtonActionPerformed
 
-    private void PesquisaNomePrescricaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomePrescricaoActionPerformed
-        ListaPrescricao.setVisible(false);
-    }//GEN-LAST:event_PesquisaNomePrescricaoActionPerformed
-
-    private void PesquisaNomePrescricaoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomePrescricaoKeyReleased
-        if (evt.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) { 
-            ListaDePesquisaPrescricao();
-        }
-    }//GEN-LAST:event_PesquisaNomePrescricaoKeyReleased
-
-    private void ListaPrescricaoListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaPrescricaoListaMousePressed
-        ListaPrescricao.setVisible(false);
-    }//GEN-LAST:event_ListaPrescricaoListaMousePressed
-
-    private void PesquisaNomeProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeProdutoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PesquisaNomeProdutoActionPerformed
+    private void ListaProdutoListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaProdutoListaMousePressed
+        Produto produto = MostraPesquisaProdutos();
+        ListaFuncionario.setVisible(false);
+    }//GEN-LAST:event_ListaProdutoListaMousePressed
 
     private void PesquisaNomeProdutoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeProdutoKeyReleased
-        // TODO add your handling code here:
+        ListaDePesquisaTipoProduto();
     }//GEN-LAST:event_PesquisaNomeProdutoKeyReleased
 
-    private void ListaProdutoListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaProdutoListaMousePressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_ListaProdutoListaMousePressed
+    private void PesquisaNomeProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeProdutoActionPerformed
+        ListaProduto.setVisible(false);
+    }//GEN-LAST:event_PesquisaNomeProdutoActionPerformed
+
+    private void ListaClienteListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaClienteListaMousePressed
+        Cliente cliente = MostraPesquisaCliente();
+        ListaCliente.setVisible(false);
+    }//GEN-LAST:event_ListaClienteListaMousePressed
+
+    private void PesquisaNomeClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteKeyReleased
+        ListaDePesquisaCliente();
+    }//GEN-LAST:event_PesquisaNomeClienteKeyReleased
+
+    private void PesquisaNomeClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteActionPerformed
+        ListaCliente.setVisible(false);
+    }//GEN-LAST:event_PesquisaNomeClienteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField Carrinho;
     private javax.swing.JList<String> ListaCliente;
     private javax.swing.JList<String> ListaFuncionario;
-    private javax.swing.JList<String> ListaPrescricao;
     private javax.swing.JList<String> ListaProduto;
     private javax.swing.JList<String> ListaUnidade;
     private javax.swing.JTextField PesquisaNomeCliente;
     private javax.swing.JTextField PesquisaNomeFuncionario;
-    private javax.swing.JTextField PesquisaNomePrescricao;
     private javax.swing.JTextField PesquisaNomeProduto;
     private javax.swing.JTextField PesquisaNomeUnidade;
     private javax.swing.JCheckBox ProntaEntregaCheckBox;
@@ -673,10 +636,10 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JComboBox<String> statusComboBox;
     // End of variables declaration//GEN-END:variables
