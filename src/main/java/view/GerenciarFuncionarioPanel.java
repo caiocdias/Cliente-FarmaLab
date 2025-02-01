@@ -347,6 +347,7 @@ public class GerenciarFuncionarioPanel extends javax.swing.JPanel {
                 funcionario.setPassword(senhaTextPane3.getText());
                 float salario = Float.parseFloat(salarioTextPane2.getText());
                 funcionario.setSalario(salario);
+                funcionario.setHabilitado(true);
                 
                 ifuncionario.atualizarFuncionario(funcionario);
                 JOptionPane.showMessageDialog(null, "Funcionario atualizado com sucesso!");

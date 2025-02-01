@@ -335,6 +335,7 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
                 medico.setEndereco(enderecoField.getText());
                 medico.setCrm(CrmTextPane.getText());
                 medico.setEstado(estadoComboBox.getName());
+                medico.setHabilitado(true);
                 
                 imedico.atualizarMedicoParceiro(medico);
                 JOptionPane.showMessageDialog(null, "Médico parceiro atualizado com sucesso!");
