@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import model.Produto;
+import model.TipoProduto;
 /**
  *
  * @author Thaissa Fernandes
@@ -60,8 +61,8 @@ public class GerenciarProdutoPanel extends javax.swing.JPanel {
                 InterfaceProduto iproduto = (InterfaceProduto) registro.lookup("Produto");
                 Produto produto = iproduto.obterProduto(ids[indice]);
                 if (produto != null) {
-                    nomeField.setText(produto.getTipo_produto());
-                    DataValidadeField.setText(produto.getData_validade());
+                    nomeField.setText(produto.getTipo_produto().getNome());
+                    //DataValidadeField.setText(produto.getData_validade()); - será uma feature
                     //produto.setPronta_entrega(ProntaEntregaCheckBox.getActionCommand());
                 }
             } catch (RemoteException | NotBoundException e) {
@@ -260,8 +261,9 @@ public class GerenciarProdutoPanel extends javax.swing.JPanel {
                 
                 Produto produto = new Produto();
                 produto.setId(ids[indice]);
-                produto.setTipo_produto(nomeField.getText());
-                produto.setData_validade(DataValidadeField.getText());
+                TipoProduto tipoProduto = new TipoProduto(nomeField.getText());
+                produto.setTipo_produto(tipoProduto);
+                //produto.setData_validade(DataValidadeField.getText()); - será uma feature
                 produto.setHabilitado(true);
                 
                 iproduto.atualizarProduto(produto);
