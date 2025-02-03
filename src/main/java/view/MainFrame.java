@@ -61,6 +61,18 @@ public class MainFrame extends javax.swing.JFrame {
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Prescrição");
         treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Unidade e Estoque");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Unidade");
+        treeNode2.add(treeNode3);
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Estoque");
+        treeNode2.add(treeNode3);
+        treeNode1.add(treeNode2);
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Tributo");
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Tributo");
+        treeNode2.add(treeNode3);
+        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Relacionar Unidade Tributo");
+        treeNode2.add(treeNode3);
+        treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Pedidos");
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Pedido");
         treeNode2.add(treeNode3);
@@ -71,16 +83,6 @@ public class MainFrame extends javax.swing.JFrame {
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Orçamento");
         treeNode2.add(treeNode3);
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Orçamento");
-        treeNode2.add(treeNode3);
-        treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Unidade, Estoque e Tributo");
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Unidade");
-        treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Estoque");
-        treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Tributo");
-        treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Relacionar Unidade Tributo");
         treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Vendas");
@@ -113,7 +115,7 @@ public class MainFrame extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 594, Short.MAX_VALUE))
+                .addComponent(jSplitPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 686, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -136,7 +138,7 @@ public class MainFrame extends javax.swing.JFrame {
         panelMap.put("Cadastrar Prescrição", new CadastrarPrescricaoPanel());
 
         panelMap.put("Cadastrar Orçamento", new CadastrarOrcamentoPanel());
-        //panelMap.put("Gerenciar Orçamento", new GerenciarOrcamentoPanel());
+        panelMap.put("Gerenciar Orçamento", new GerenciarOrcamentoPanel());
         
         panelMap.put("Cadastrar Pedido", new CadastrarPedidoPanel());
         //panelMap.put("Gerenciar Pedido", new GerenciarPedidoPanel());

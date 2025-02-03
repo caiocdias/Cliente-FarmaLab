@@ -247,12 +247,11 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
 
                 produtoDisp = iproduto.produtoDisponivel(tipoProduto.getId());
 
-                if (produtoDisp == null) { // Nenhum produto disponível? Criamos um novo para o carrinho
+                if (produtoDisp == null) {
                     produtoDisp = new Produto();
-                    //Registry registro2 = LocateRegistry.getRegistry("localhost", 1099);
-                    //InterfaceEstoque iEstoque = (InterfaceEstoque) registro2.lookup("Estoque");
                     Estoque estoque = MostraPesquisaEstoque();
                     produtoDisp.setId(0);
+                    produtoDisp.setHabilitado(true);
                     produtoDisp.setColetado(false);
                     produtoDisp.setData_validade(null);
                     produtoDisp.setEstoque(estoque);
@@ -265,8 +264,6 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(null, "Erro ao buscar produto: " + e.getMessage());
         }
     }
-
-    // Evita NullPointerException ao definir o texto do carrinho
     Carrinho.setText(tipoProduto != null ? tipoProduto.getNome() : "Produto não encontrado");
 
     return produtoDisp;
@@ -526,7 +523,7 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
         ProntaEntregaCheckBox.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         ProntaEntregaCheckBox.setText("Pronta-entrega");
 
-        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Produto", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18))); // NOI18N
+        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Tipo do Produto", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18))); // NOI18N
 
         PesquisaNomeProduto.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         PesquisaNomeProduto.addActionListener(new java.awt.event.ActionListener() {
@@ -810,13 +807,11 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField Carrinho;
     private javax.swing.JList<String> ListaCliente;
-    private javax.swing.JList<String> ListaCliente1;
     private javax.swing.JList<String> ListaEstoque;
     private javax.swing.JList<String> ListaFuncionario;
     private javax.swing.JList<String> ListaProduto;
     private javax.swing.JList<String> ListaUnidade;
     private javax.swing.JTextField PesquisaNomeCliente;
-    private javax.swing.JTextField PesquisaNomeCliente1;
     private javax.swing.JTextField PesquisaNomeEstoque;
     private javax.swing.JTextField PesquisaNomeFuncionario;
     private javax.swing.JTextField PesquisaNomeProduto;
@@ -832,7 +827,6 @@ public class CadastrarPedidoPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JComboBox<String> statusComboBox;

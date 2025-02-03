@@ -496,6 +496,7 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
         orcamento.setDescricao(DescricaoTextArea.getText());
         StatusOrcamento statusSelecionado = getStatusSelecionado();
         orcamento.setStatus(statusSelecionado);
+        orcamento.setHabilitado(true);
         
         
         try {

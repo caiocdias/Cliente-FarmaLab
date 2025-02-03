@@ -4,16 +4,28 @@
  */
 package view;
 
+import controller.InterfaceCliente;
+import controller.InterfaceFuncionario;
 import controller.InterfaceMedicoParceiro;
+import controller.InterfaceOrcamento;
+import controller.InterfaceUnidade;
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
+import model.Cliente;
+import model.Funcionario;
 import model.MedicoParceiro;
+import model.Orcamento;
+import model.Unidade;
+import model.enums.StatusOrcamento;
 
 /**
  *
@@ -21,59 +33,184 @@ import model.MedicoParceiro;
  */
 public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
 
-    DefaultListModel MODELO;
-    List<MedicoParceiro> medicos = new ArrayList<>();
-    Integer [] ids;
+    DefaultListModel MODELOcliente;
+    List<Cliente> clientes = new ArrayList<>();
+    Integer [] idsCliente;
+    
+    DefaultListModel MODELOfuncionario;
+    List<Funcionario> funcionarios = new ArrayList<>();
+    Integer [] idsFuncionario;
+    
+    DefaultListModel MODELOunidade;
+    List<Unidade> unidades = new ArrayList<>();
+    Integer [] idsUnidade;
     
     public GerenciarOrcamentoPanel() {
         initComponents();
-        Lista.setVisible(false);
-        MODELO = new DefaultListModel();
-        Lista.setModel(MODELO);
+        ListaCliente.setVisible(false);
+        MODELOcliente = new DefaultListModel();
+        ListaCliente.setModel(MODELOcliente);
         
+        ListaFuncionario.setVisible(false);
+        MODELOfuncionario = new DefaultListModel();
+        ListaFuncionario.setModel(MODELOfuncionario);
+        
+        ListaUnidade.setVisible(false);
+        MODELOunidade = new DefaultListModel();
+        ListaUnidade.setModel(MODELOunidade);
         
     }
     
-    public void ListaDePesquisa() {
+    public StatusOrcamento getStatusSelecionado() {
+        String descricaoSelecionada = (String) statusComboBox.getSelectedItem();
+        for (StatusOrcamento status : StatusOrcamento.values()) {
+            if (status.getDescricao().equals(descricaoSelecionada)) {
+                return status;
+            }
+        }
+        return null;  // Caso não encontre um status correspondente
+    }
+    
+    public Unidade ListaDePesquisaUnidade() {
+        Unidade unidade = null;
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
-            medicos = imedico.buscarMedicosParceirosPorNome(PesquisaNome.getText());
+            InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+            unidades = iunidade.buscarUnidadePorNome(PesquisaNomeUnidade.getText());
 
-            MODELO.removeAllElements();
-            ids = new Integer[medicos.size()];
+            MODELOunidade.removeAllElements();
+            idsUnidade = new Integer[unidades.size()];
             
-            for (int i = 0; i < medicos.size(); i++) {
-                MedicoParceiro medico = medicos.get(i);
-                MODELO.addElement(medico.getNome());
-                ids[i] = medico.getId();
+            for (int i = 0; i < unidades.size(); i++) {
+                unidade = unidades.get(i);
+                MODELOunidade.addElement(unidade.getNome());
+                idsUnidade[i] = unidade.getId();
             }
             
-            Lista.setVisible(!medicos.isEmpty());
-            
+            ListaUnidade.setVisible(!unidades.isEmpty());
         } catch (RemoteException | NotBoundException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao listar medico parceiro: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao listar unidades: " + e.getMessage());
         }
+        return unidade;
     }
+    
+    public Funcionario ListaDePesquisaFuncionario() {
+        Funcionario funcionario = null;
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceFuncionario ifuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
+            funcionarios = ifuncionario.buscarFuncionariosPorNome(PesquisaNomeFuncionario.getText());
 
-    public void MostraPesquisa() {
-        int indice = Lista.getSelectedIndex();
-        if (indice >= 0) {
+            MODELOfuncionario.removeAllElements();
+            idsFuncionario = new Integer[funcionarios.size()];
+            
+            for (int i = 0; i < funcionarios.size(); i++) {
+                funcionario = funcionarios.get(i);
+                MODELOfuncionario.addElement(funcionario.getNome());
+                idsFuncionario[i] = funcionario.getId();
+            }
+            
+            ListaFuncionario.setVisible(!funcionarios.isEmpty());
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar funcionario: " + e.getMessage());
+        }
+        return funcionario;
+    }
+    
+    public Cliente ListaDePesquisaCliente() {
+        Cliente cliente = null;
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
+            clientes = icliente.buscarClientesPorNome(PesquisaNomeCliente.getText());
+
+            MODELOcliente.removeAllElements();
+            idsCliente = new Integer[clientes.size()];
+            
+            for (int i = 0; i < clientes.size(); i++) {
+                cliente = clientes.get(i);
+                MODELOcliente.addElement(cliente.getNome());
+                idsCliente[i] = cliente.getId();
+            }
+            
+            ListaCliente.setVisible(!clientes.isEmpty());
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar clientes: " + e.getMessage());
+        }
+        return cliente;
+    }
+    
+    public Cliente MostraPesquisaCliente() {
+        Cliente cliente = null;
+        int indiceCliente = ListaCliente.getSelectedIndex();
+        if (indiceCliente >= 0) {
             try{
                 Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-                InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
-                MedicoParceiro medico = imedico.obterMedicoParceiro(ids[indice], null);
-                if (medico != null) {
-                    
+                InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
+                cliente = icliente.obterCliente(idsCliente[indiceCliente], null);
+                if (cliente != null) {
+                    PesquisaNomeCliente.setText(cliente.getNome());
+                }
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar cliente: " + e.getMessage());
+            }
+        } else {
+            cliente = ListaDePesquisaCliente();
+        }
+        return cliente;
+    }
+    
+    
+    
+    public Funcionario MostraPesquisaFuncionario() {
+        Funcionario funcionario = null;
+        int indiceFuncionario = ListaFuncionario.getSelectedIndex();
+        if (indiceFuncionario >= 0) {
+            try{
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceFuncionario ifuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
+                funcionario = ifuncionario.obterFuncionario(idsFuncionario[indiceFuncionario], null);
+                if (funcionario != null) {
+                    PesquisaNomeFuncionario.setText(funcionario.getNome());
                 }
             } catch (RemoteException | NotBoundException e) {
                 JOptionPane.showMessageDialog(null, "Erro ao buscar funcionario: " + e.getMessage());
             }
+        } else {
+            funcionario = ListaDePesquisaFuncionario();
         }
+        return funcionario;
     }
     
+    public Unidade MostraPesquisaUnidade() {
+        Unidade unidade = null;
+        int indiceUnidade = ListaUnidade.getSelectedIndex();
+        if (indiceUnidade >= 0) {
+            try{
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+                unidade = iunidade.obterUnidade(idsUnidade[indiceUnidade]);
+                if (unidade != null) {
+                    PesquisaNomeUnidade.setText(unidade.getNome());
+                }
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar unidade: " + e.getMessage());
+            }
+        } else {
+            unidade = ListaDePesquisaUnidade();
+        }
+        return unidade;
+    }
+    
+
     private void limparCampos() {
-        
+        PesquisaId.setText("");
+        PesquisaNomeUnidade.setText("");
+        PesquisaNomeCliente.setText("");
+        PesquisaNomeFuncionario.setText("");
+        DescricaoTextArea.setText("");
+        ObservacoesTextArea.setText("");
+        statusComboBox.setSelectedIndex(0);
     }
 
     /**
@@ -85,8 +222,11 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel5 = new javax.swing.JPanel();
+        PesquisaId = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        BuscarButton = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        jSeparator1 = new javax.swing.JSeparator();
         jPanel4 = new javax.swing.JPanel();
         PesquisaNomeUnidade = new javax.swing.JTextField();
         ListaUnidade = new javax.swing.JList<>();
@@ -96,7 +236,6 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
         jPanel7 = new javax.swing.JPanel();
         PesquisaNomeFuncionario = new javax.swing.JTextField();
         ListaFuncionario = new javax.swing.JList<>();
-        jPanel1 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         DescricaoTextArea = new javax.swing.JTextArea();
@@ -107,9 +246,49 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
         statusComboBox = new javax.swing.JComboBox<>();
         confirmarButton = new javax.swing.JButton();
         excluirButton = new javax.swing.JButton();
-        jPanel5 = new javax.swing.JPanel();
-        PesquisaNome = new javax.swing.JTextField();
-        Lista = new javax.swing.JList<>();
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar unidade", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
+
+        PesquisaId.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel4.setText("Id:");
+
+        BuscarButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        BuscarButton.setText("Buscar");
+        BuscarButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BuscarButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(BuscarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(PesquisaId)))
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(PesquisaId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(BuscarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Edição", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
 
@@ -141,7 +320,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PesquisaNomeUnidade, javax.swing.GroupLayout.DEFAULT_SIZE, 329, Short.MAX_VALUE)
+                    .addComponent(PesquisaNomeUnidade)
                     .addComponent(ListaUnidade, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -184,7 +363,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PesquisaNomeCliente, javax.swing.GroupLayout.DEFAULT_SIZE, 401, Short.MAX_VALUE)
+                    .addComponent(PesquisaNomeCliente)
                     .addComponent(ListaCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -225,7 +404,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
             .addGroup(jPanel7Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PesquisaNomeFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, 335, Short.MAX_VALUE)
+                    .addComponent(PesquisaNomeFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, 316, Short.MAX_VALUE)
                     .addComponent(ListaFuncionario, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -256,49 +435,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
         jLabel6.setText("Status:");
 
         statusComboBox.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Em análise", "Parcialmente aprovado", "Aprovado", "Rejeitado", "    " }));
-        statusComboBox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                statusComboBoxActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 196, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel8)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel6))
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel3))
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(jScrollPane1))
-                .addContainerGap())
-        );
+        statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Em análise", "Aprovado. Produto cadastrado!", "Aprovado parcialmente. Leia as observações!", "Rejeitado" }));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -306,34 +443,46 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(47, 47, 47)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel2Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGap(10, 10, 10)))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 251, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(18, 18, Short.MAX_VALUE)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(statusComboBox, 0, 1, Short.MAX_VALUE))
+                    .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(10, 10, 10)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(221, Short.MAX_VALUE))
-            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                    .addContainerGap(211, Short.MAX_VALUE)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap()))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel6))
+                    .addComponent(jLabel8)
+                    .addComponent(jLabel3)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 120, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
+                .addContainerGap(23, Short.MAX_VALUE))
         );
 
         confirmarButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
@@ -354,163 +503,91 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
             }
         });
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar unidade", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
-
-        PesquisaNome.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        PesquisaNome.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PesquisaNomeActionPerformed(evt);
-            }
-        });
-        PesquisaNome.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                PesquisaNomeKeyReleased(evt);
-            }
-        });
-
-        Lista.setBorder(null);
-        Lista.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mousePressed(java.awt.event.MouseEvent evt) {
-                ListaListaMousePressed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(PesquisaNome, javax.swing.GroupLayout.DEFAULT_SIZE, 1206, Short.MAX_VALUE)
-                .addContainerGap())
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(Lista, javax.swing.GroupLayout.DEFAULT_SIZE, 754, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addComponent(PesquisaNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(109, Short.MAX_VALUE))
-            .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel5Layout.createSequentialGroup()
-                    .addGap(49, 49, 49)
-                    .addComponent(Lista, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(confirmarButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(excluirButton)))
-                .addContainerGap())
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addContainerGap()))
+                        .addComponent(excluirButton))
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(230, Short.MAX_VALUE)
+                .addGap(22, 22, 22)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(18, 18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(confirmarButton)
-                    .addComponent(excluirButton))
-                .addGap(14, 14, 14))
-            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(552, Short.MAX_VALUE)))
+                    .addComponent(excluirButton)
+                    .addComponent(confirmarButton))
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void confirmarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmarButtonActionPerformed
-        int indice = Lista.getSelectedIndex();
-        if (indice >= 0) {
-            try {
-                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-                InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
-                
-                MedicoParceiro medico = new MedicoParceiro();
-                medico.setId(ids[indice]);
-                
-                
-                imedico.atualizarMedicoParceiro(medico);
-                JOptionPane.showMessageDialog(null, "Médico parceiro atualizado com sucesso!");
-                limparCampos();
-            } catch (RemoteException | NotBoundException e) {
-                JOptionPane.showMessageDialog(null, "Erro ao atualizar médico parceiro: " + e.getMessage());
-            }
-        } else {
-            JOptionPane.showMessageDialog(null, "Nenhum médico parceiro selecionado!");
+        Orcamento orcamento = new Orcamento();
+        Cliente cliente = MostraPesquisaCliente();
+        Funcionario funcionario = MostraPesquisaFuncionario();
+        Unidade unidade = MostraPesquisaUnidade();
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceOrcamento iOrcamento = (InterfaceOrcamento) registro.lookup("Orcamento");
+
+            orcamento.setCliente(cliente);
+            orcamento.setFuncionario(funcionario);
+            orcamento.setUnidade(unidade);
+            orcamento.setDescricao(DescricaoTextArea.getText());
+            StatusOrcamento statusSelecionado = getStatusSelecionado();
+            orcamento.setStatus(statusSelecionado);
+            orcamento.setHabilitado(true);
+
+
+            iOrcamento.atualizarOrcamento(orcamento);
+            JOptionPane.showMessageDialog(null, "Orcamento atualizado com sucesso!");
+            limparCampos();
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao atualizar orcamento: " + e.getMessage());
         }
+        
     }//GEN-LAST:event_confirmarButtonActionPerformed
 
     private void excluirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluirButtonActionPerformed
-        int indice = Lista.getSelectedIndex();
-        if (indice >= 0) {
-            int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir este médico parceiro?", "Confirmação", JOptionPane.YES_NO_OPTION);
-            if (confirmacao == JOptionPane.YES_OPTION) {
-                try {
-                    Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-                    InterfaceMedicoParceiro imedico = (InterfaceMedicoParceiro) registro.lookup("MedicoParceiro");
-                    
-                    imedico.desativarMedicoParceiro(ids[indice]);
-                    JOptionPane.showMessageDialog(null, "Médico parceiro excluído com sucesso!");
-                    limparCampos();
-                    ListaDePesquisa();
-                } catch (RemoteException | NotBoundException e) {
-                    JOptionPane.showMessageDialog(null, "Erro ao excluir médico parceiro: " + e.getMessage());
-                }
+        int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir este orcamento", "Confirmação", JOptionPane.YES_NO_OPTION);
+        if (confirmacao == JOptionPane.YES_OPTION) {
+            try {
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceOrcamento iOrcamento = (InterfaceOrcamento) registro.lookup("Orcamento");
+                
+                int id = Integer.parseInt(PesquisaId.getText());
+                iOrcamento.desativarOrcamento(id);
+                JOptionPane.showMessageDialog(null, "Orcamento excluído com sucesso!");
+                limparCampos();
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao excluir orcamento: " + e.getMessage());
             }
-        } else {
-            JOptionPane.showMessageDialog(null, "Nenhum funcionario selecionado!");
         }
     }//GEN-LAST:event_excluirButtonActionPerformed
 
-    private void PesquisaNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeActionPerformed
-        
-        Lista.setVisible(false);
-        
-    }//GEN-LAST:event_PesquisaNomeActionPerformed
-
-    private void PesquisaNomeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeKeyReleased
-        ListaDePesquisa();
-    }//GEN-LAST:event_PesquisaNomeKeyReleased
-
-    private void ListaListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaListaMousePressed
-        MostraPesquisa();
-        
-        Lista.setVisible(false);
-        
-    }//GEN-LAST:event_ListaListaMousePressed
-
     private void PesquisaNomeUnidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeUnidadeActionPerformed
-        ListaUnidade.setVisible(false);
+        
     }//GEN-LAST:event_PesquisaNomeUnidadeActionPerformed
 
     private void PesquisaNomeUnidadeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeUnidadeKeyReleased
-        //ListaDePesquisa();
+        ListaDePesquisaUnidade();
     }//GEN-LAST:event_PesquisaNomeUnidadeKeyReleased
 
     private void ListaUnidadeListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaUnidadeListaMousePressed
-        //MostraPesquisa();
-        //ListaUnidade.setVisible(false);
+        Unidade Unidade = MostraPesquisaUnidade();
+        
     }//GEN-LAST:event_ListaUnidadeListaMousePressed
 
     private void PesquisaNomeClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteActionPerformed
@@ -518,47 +595,65 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeClienteActionPerformed
 
     private void PesquisaNomeClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteKeyReleased
-        // TODO add your handling code here:
+        ListaDePesquisaCliente();
     }//GEN-LAST:event_PesquisaNomeClienteKeyReleased
 
     private void ListaClienteListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaClienteListaMousePressed
-        // TODO add your handling code here:
+        Cliente cliente = MostraPesquisaCliente();
     }//GEN-LAST:event_ListaClienteListaMousePressed
 
     private void PesquisaNomeFuncionarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeFuncionarioActionPerformed
-        //ListaDePesquisaFuncionario();
+        
     }//GEN-LAST:event_PesquisaNomeFuncionarioActionPerformed
 
     private void PesquisaNomeFuncionarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeFuncionarioKeyReleased
-        // TODO add your handling code here:
+        ListaDePesquisaFuncionario();
     }//GEN-LAST:event_PesquisaNomeFuncionarioKeyReleased
 
     private void ListaFuncionarioListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaFuncionarioListaMousePressed
-        // TODO add your handling code here:
+        Funcionario funcionario = MostraPesquisaFuncionario();
     }//GEN-LAST:event_ListaFuncionarioListaMousePressed
 
-    private void statusComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusComboBoxActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_statusComboBoxActionPerformed
+    private void BuscarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuscarButtonActionPerformed
+        try{
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceOrcamento iOrcamento = (InterfaceOrcamento) registro.lookup("Orcamento");
+            
+            int id = Integer.parseInt(PesquisaId.getText());
+            PesquisaId.getText();
+            Orcamento orcamento = iOrcamento.obterOrcamento(id);
+            if (orcamento != null) {
+                PesquisaNomeUnidade.setText(orcamento.getUnidade().getNome());
+                PesquisaNomeCliente.setText(orcamento.getCliente().getNome());
+                PesquisaNomeFuncionario.setText(orcamento.getFuncionario().getNome());
+                DescricaoTextArea.setText(orcamento.getDescricao());
+                statusComboBox.setSelectedItem(orcamento.getStatus().getDescricao());
+            }else{
+                JOptionPane.showMessageDialog(null, "Nenhum orçamento com esse id");
+            }
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao buscar orcamento: " + e.getMessage());
+        }
+    }//GEN-LAST:event_BuscarButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BuscarButton;
     private javax.swing.JTextArea DescricaoTextArea;
-    private javax.swing.JList<String> Lista;
     private javax.swing.JList<String> ListaCliente;
     private javax.swing.JList<String> ListaFuncionario;
     private javax.swing.JList<String> ListaUnidade;
     private javax.swing.JTextArea ObservacoesTextArea;
-    private javax.swing.JTextField PesquisaNome;
+    private javax.swing.JTextField PesquisaId;
     private javax.swing.JTextField PesquisaNomeCliente;
     private javax.swing.JTextField PesquisaNomeFuncionario;
     private javax.swing.JTextField PesquisaNomeUnidade;
     private javax.swing.JButton confirmarButton;
     private javax.swing.JButton excluirButton;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
@@ -566,7 +661,6 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JComboBox<String> statusComboBox;
     // End of variables declaration//GEN-END:variables
 }

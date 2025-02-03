@@ -29,6 +29,9 @@ public class CadastrarEstoquePanel extends javax.swing.JPanel {
     
     public CadastrarEstoquePanel() {
         initComponents();
+        
+        MODELOunidade = new DefaultListModel();
+        ListaUnidade.setModel(MODELOunidade);
     }
     
     public void ListaDePesquisaUnidade() {
@@ -194,7 +197,7 @@ public class CadastrarEstoquePanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void PesquisaNomeUnidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeUnidadeActionPerformed
-        ListaUnidade.setVisible(false);
+        
     }//GEN-LAST:event_PesquisaNomeUnidadeActionPerformed
 
     private void PesquisaNomeUnidadeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeUnidadeKeyReleased
@@ -202,8 +205,7 @@ public class CadastrarEstoquePanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeUnidadeKeyReleased
 
     private void ListaUnidadeListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaUnidadeListaMousePressed
-        ListaUnidade.setVisible(false);
-        MostraPesquisaUnidade();
+        Unidade Unidade = MostraPesquisaUnidade();
     }//GEN-LAST:event_ListaUnidadeListaMousePressed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

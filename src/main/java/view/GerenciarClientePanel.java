@@ -314,7 +314,6 @@ public class GerenciarClientePanel extends javax.swing.JPanel {
                     icliente.desativarCliente(ids[indice]);
                     JOptionPane.showMessageDialog(null, "Cliente excluído com sucesso!");
                     limparCampos();
-                    ListaDePesquisa();
                 } catch (RemoteException | NotBoundException e) {
                     JOptionPane.showMessageDialog(null, "Erro ao excluir cliente: " + e.getMessage());
                 }

@@ -84,8 +84,8 @@ public class Client extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
-        String cpf = cpfField.getText();
-        String senha = new String(senhaField.getPassword());
+        String cpf = cpfField.getText(); //123.456.789-10
+        String senha = new String(senhaField.getPassword()); //123456
 
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);

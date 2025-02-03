@@ -360,7 +360,6 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
                     imedico.desativarMedicoParceiro(ids[indice]);
                     JOptionPane.showMessageDialog(null, "Médico parceiro excluído com sucesso!");
                     limparCampos();
-                    ListaDePesquisa();
                 } catch (RemoteException | NotBoundException e) {
                     JOptionPane.showMessageDialog(null, "Erro ao excluir médico parceiro: " + e.getMessage());
                 }
