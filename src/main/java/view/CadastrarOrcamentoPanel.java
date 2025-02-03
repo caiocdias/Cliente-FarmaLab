@@ -6,6 +6,7 @@ package view;
 
 import controller.InterfaceCliente;
 import controller.InterfaceFuncionario;
+import controller.InterfaceOrcamento;
 import controller.InterfaceUnidade;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -13,10 +14,13 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import model.Cliente;
 import model.Funcionario;
+import model.Orcamento;
 import model.Unidade;
 
 /**
@@ -65,12 +69,12 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
             for (int i = 0; i < unidades.size(); i++) {
                 Unidade unidade = unidades.get(i);
                 MODELOunidade.addElement(unidade.getNome());
-                idsCliente[i] = unidade.getId();
+                idsUnidade[i] = unidade.getId();
             }
             
-            ListaUnidade.setVisible(!clientes.isEmpty());
+            ListaUnidade.setVisible(!unidades.isEmpty());
         } catch (RemoteException | NotBoundException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao listar clientes: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao listar unidades: " + e.getMessage());
         }
     }
     
@@ -114,6 +118,62 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
         } catch (RemoteException | NotBoundException e) {
             JOptionPane.showMessageDialog(null, "Erro ao listar clientes: " + e.getMessage());
         }
+    }
+    
+    public Cliente MostraPesquisaCliente() {
+        Cliente cliente = null;
+        int indiceCliente = ListaCliente.getSelectedIndex();
+        if (indiceCliente >= 0) {
+            try{
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
+                cliente = icliente.obterCliente(idsCliente[indiceCliente], null);
+                if (cliente != null) {
+                    PesquisaNomeCliente.setText(cliente.getNome());
+                }
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar cliente: " + e.getMessage());
+            }
+        }
+        return cliente;
+    }
+    
+    
+    
+    public Funcionario MostraPesquisaFuncionario() {
+        Funcionario funcionario = null;
+        int indiceFuncionario = ListaFuncionario.getSelectedIndex();
+        if (indiceFuncionario >= 0) {
+            try{
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceFuncionario ifuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
+                funcionario = ifuncionario.obterFuncionario(idsFuncionario[indiceFuncionario], null);
+                if (funcionario != null) {
+                    PesquisaNomeFuncionario.setText(funcionario.getNome());
+                }
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar funcionario: " + e.getMessage());
+            }
+        }
+        return funcionario;
+    }
+    
+    public Unidade MostraPesquisaUnidade() {
+        Unidade unidade = null;
+        int indiceUnidade = ListaUnidade.getSelectedIndex();
+        if (indiceUnidade >= 0) {
+            try{
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+                unidade = iunidade.obterUnidade(idsUnidade[indiceUnidade]);
+                if (unidade != null) {
+                    PesquisaNomeUnidade.setText(unidade.getNome());
+                }
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar unidade: " + e.getMessage());
+            }
+        }
+        return unidade;
     }
 
     private void limparCampos() {
@@ -288,6 +348,11 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
 
         statusComboBox.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Em análise", "Parcialmente aprovado", "Aprovado", "Rejeitado", "    " }));
+        statusComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                statusComboBoxActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -378,6 +443,7 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeUnidadeKeyReleased
 
     private void ListaUnidadeListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaUnidadeListaMousePressed
+        Unidade unidade = MostraPesquisaUnidade();
         ListaUnidade.setVisible(false);
     }//GEN-LAST:event_ListaUnidadeListaMousePressed
 
@@ -390,6 +456,7 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeClienteKeyReleased
 
     private void ListaClienteListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaClienteListaMousePressed
+        Cliente cliente = MostraPesquisaCliente();
         ListaCliente.setVisible(false);
     }//GEN-LAST:event_ListaClienteListaMousePressed
 
@@ -403,12 +470,36 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_PesquisaNomeFuncionarioKeyReleased
 
     private void SalvarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SalvarButtonActionPerformed
-
+        Orcamento orcamento = new Orcamento();
+        Cliente cliente = MostraPesquisaCliente();
+        Funcionario funcionario = MostraPesquisaFuncionario();
+        Unidade unidade = MostraPesquisaUnidade();
+        
+        orcamento.setCliente(cliente);
+        orcamento.setFuncionario(funcionario);
+        orcamento.setUnidade(unidade);
+        orcamento.setDescricao(DescricaoTextArea.getText());
+        
+        
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost",1099);
+            InterfaceOrcamento iOrcamento = (InterfaceOrcamento) registro.lookup("Orcamento");
+            iOrcamento.inserirOrcamento(orcamento);
+            JOptionPane.showMessageDialog(null, "Orçamento inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            limparCampos();
+        } catch (RemoteException | NotBoundException ex) {
+            Logger.getLogger(CadastrarPedidoPanel.class.getName()).log(Level.SEVERE, null, ex);
+        } 
     }//GEN-LAST:event_SalvarButtonActionPerformed
 
     private void ListaFuncionarioListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaFuncionarioListaMousePressed
+        Funcionario funcionario = MostraPesquisaFuncionario();
         ListaFuncionario.setVisible(false);
     }//GEN-LAST:event_ListaFuncionarioListaMousePressed
+
+    private void statusComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_statusComboBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

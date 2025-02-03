@@ -67,7 +67,7 @@ public class CadastrarClientePanel extends javax.swing.JPanel {
         jLabel3.setText("Endereço:");
 
         jLabel4.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        jLabel4.setText("CPF:");
+        jLabel4.setText("CPF: *");
 
         CpfField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
@@ -79,7 +79,7 @@ public class CadastrarClientePanel extends javax.swing.JPanel {
         nomeField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        jLabel2.setText("Nome:");
+        jLabel2.setText("Nome: *");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);

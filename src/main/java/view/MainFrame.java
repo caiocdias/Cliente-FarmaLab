@@ -66,8 +66,6 @@ public class MainFrame extends javax.swing.JFrame {
         treeNode2.add(treeNode3);
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Pedido");
         treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Produtos");
-        treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Orçamentos");
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Orçamento");
@@ -124,7 +122,6 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     private void initPanels() {
-        InterfaceCliente clienteService = null;
         
         panelMap.put("Cadastrar Cliente", new CadastrarClientePanel());
         panelMap.put("Gerenciar Cliente", new GerenciarClientePanel());
@@ -141,7 +138,6 @@ public class MainFrame extends javax.swing.JFrame {
         
         panelMap.put("Cadastrar Pedido", new CadastrarPedidoPanel());
         //panelMap.put("Gerenciar Pedido", new GerenciarPedidoPanel());
-        //panelMap.put("Gerenciar Produtos", new GerenciarProdutosPanel());
         
         panelMap.put("Cadastrar Unidade", new CadastrarUnidadePanel());
         panelMap.put("Cadastrar Tributo", new CadastrarTributoPanel());
