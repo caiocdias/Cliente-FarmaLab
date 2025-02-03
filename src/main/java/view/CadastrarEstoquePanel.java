@@ -4,77 +4,78 @@
  */
 package view;
 
-import controller.InterfaceCliente;
-import controller.InterfacePrescricao;
+import controller.InterfaceEstoque;
+import controller.InterfaceUnidade;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
-import model.Cliente;
-import model.Prescricao;
+import model.Estoque;
+import model.Unidade;
 
 /**
  *
  * @author Isabely
  */
-public class CadastrarPrescricaoPanel extends javax.swing.JPanel {
+public class CadastrarEstoquePanel extends javax.swing.JPanel {
 
-    DefaultListModel MODELOcliente;
-    List<Cliente> clientes = new ArrayList<>();
-    Integer [] idsCliente;
+    DefaultListModel MODELOunidade;
+    List<Unidade> unidades = new ArrayList<>();
+    Integer [] idsUnidade;
     
-    public CadastrarPrescricaoPanel() {
+    public CadastrarEstoquePanel() {
         initComponents();
-        ListaCliente.setVisible(false);
-        MODELOcliente = new DefaultListModel();
-        ListaCliente.setModel(MODELOcliente);
     }
     
-    public void ListaDePesquisaCliente() {
+    public void ListaDePesquisaUnidade() {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
-            clientes = icliente.buscarClientesPorNome(PesquisaNomeCliente.getText());
+            InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+            unidades = iunidade.buscarUnidadePorNome(PesquisaNomeUnidade.getText());
 
-            MODELOcliente.removeAllElements();
-            idsCliente = new Integer[clientes.size()];
+            MODELOunidade.removeAllElements();
+            idsUnidade = new Integer[unidades.size()];
             
-            for (int i = 0; i < clientes.size(); i++) {
-                Cliente cliente = clientes.get(i);
-                MODELOcliente.addElement(cliente.getNome());
-                idsCliente[i] = cliente.getId();
+            for (int i = 0; i < unidades.size(); i++) {
+                Unidade unidade = unidades.get(i);
+                MODELOunidade.addElement(unidade.getNome());
+                idsUnidade[i] = unidade.getId();
             }
             
-            ListaCliente.setVisible(!clientes.isEmpty());
+            ListaUnidade.setVisible(!unidades.isEmpty());
         } catch (RemoteException | NotBoundException e) {
-            JOptionPane.showMessageDialog(null, "Erro ao listar clientes: " + e.getMessage());
+            JOptionPane.showMessageDialog(null, "Erro ao listar unidades: " + e.getMessage());
         }
     }
     
-    public Cliente MostraPesquisaCliente() {
-        Cliente cliente = null;
-        int indiceCliente = ListaCliente.getSelectedIndex();
-        if (indiceCliente >= 0) {
+    public Unidade MostraPesquisaUnidade() {
+        Unidade unidade = null;
+        int indiceUnidade = ListaUnidade.getSelectedIndex();
+        if (indiceUnidade >= 0) {
             try{
                 Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-                InterfaceCliente icliente = (InterfaceCliente) registro.lookup("Cliente");
-                cliente = icliente.obterCliente(idsCliente[indiceCliente], null);
-                if (cliente != null) {
-                    PesquisaNomeCliente.setText(cliente.getNome());
+                InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+                unidade = iunidade.obterUnidade(idsUnidade[indiceUnidade]);
+                if (unidade != null) {
+                    PesquisaNomeUnidade.setText(unidade.getNome());
                 }
             } catch (RemoteException | NotBoundException e) {
-                JOptionPane.showMessageDialog(null, "Erro ao buscar cliente: " + e.getMessage());
+                JOptionPane.showMessageDialog(null, "Erro ao buscar unidade: " + e.getMessage());
             }
         }
-        return cliente;
+        return unidade;
     }
-
+    
+    private void limparCampos() {
+        PesquisaNomeUnidade.setText("");
+        NomeTextPane.setText("");
+        
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -84,35 +85,39 @@ public class CadastrarPrescricaoPanel extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel6 = new javax.swing.JPanel();
-        PesquisaNomeCliente = new javax.swing.JTextField();
-        ListaCliente = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        PesquisaNomeUnidade = new javax.swing.JTextField();
+        ListaUnidade = new javax.swing.JList<>();
         jLabel6 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        CrmTextPane = new javax.swing.JTextPane();
+        NomeTextPane = new javax.swing.JTextPane();
         jButton1 = new javax.swing.JButton();
 
-        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Cliente", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18))); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel1.setText("Estoque");
+
+        jPanel6.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Unidade", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18))); // NOI18N
         jPanel6.setAutoscrolls(true);
         jPanel6.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
-        PesquisaNomeCliente.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        PesquisaNomeCliente.addActionListener(new java.awt.event.ActionListener() {
+        PesquisaNomeUnidade.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+        PesquisaNomeUnidade.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PesquisaNomeClienteActionPerformed(evt);
+                PesquisaNomeUnidadeActionPerformed(evt);
             }
         });
-        PesquisaNomeCliente.addKeyListener(new java.awt.event.KeyAdapter() {
+        PesquisaNomeUnidade.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
-                PesquisaNomeClienteKeyReleased(evt);
+                PesquisaNomeUnidadeKeyReleased(evt);
             }
         });
 
-        ListaCliente.setBorder(null);
-        ListaCliente.addMouseListener(new java.awt.event.MouseAdapter() {
+        ListaUnidade.setBorder(null);
+        ListaUnidade.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
-                ListaClienteListaMousePressed(evt);
+                ListaUnidadeListaMousePressed(evt);
             }
         });
 
@@ -123,28 +128,24 @@ public class CadastrarPrescricaoPanel extends javax.swing.JPanel {
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(PesquisaNomeCliente)
-                    .addComponent(ListaCliente, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(PesquisaNomeUnidade)
+                    .addComponent(ListaUnidade, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addComponent(PesquisaNomeCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(PesquisaNomeUnidade, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(ListaCliente, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
+                .addComponent(ListaUnidade, javax.swing.GroupLayout.DEFAULT_SIZE, 121, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
-        jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Prescrição");
-
         jLabel6.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        jLabel6.setText("CRM: ");
+        jLabel6.setText("Nome:");
 
-        CrmTextPane.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        jScrollPane1.setViewportView(CrmTextPane);
+        NomeTextPane.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+        jScrollPane1.setViewportView(NomeTextPane);
 
         jButton1.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         jButton1.setForeground(new java.awt.Color(51, 153, 255));
@@ -163,7 +164,7 @@ public class CadastrarPrescricaoPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 824, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 884, Short.MAX_VALUE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(6, 6, 6)
@@ -181,63 +182,57 @@ public class CadastrarPrescricaoPanel extends javax.swing.JPanel {
                 .addGap(15, 15, 15)
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
-                .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
-                .addGap(210, 210, 210)
+                .addGap(18, 18, 18)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 180, Short.MAX_VALUE)
                 .addComponent(jButton1)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
-    private void PesquisaNomeClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteActionPerformed
-        ListaCliente.setVisible(false);
-    }//GEN-LAST:event_PesquisaNomeClienteActionPerformed
+    private void PesquisaNomeUnidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PesquisaNomeUnidadeActionPerformed
+        ListaUnidade.setVisible(false);
+    }//GEN-LAST:event_PesquisaNomeUnidadeActionPerformed
 
-    private void PesquisaNomeClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteKeyReleased
-        ListaDePesquisaCliente();
-    }//GEN-LAST:event_PesquisaNomeClienteKeyReleased
+    private void PesquisaNomeUnidadeKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeUnidadeKeyReleased
+        ListaDePesquisaUnidade();
+    }//GEN-LAST:event_PesquisaNomeUnidadeKeyReleased
 
-    private void ListaClienteListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaClienteListaMousePressed
-        ListaCliente.setVisible(false);
-        Cliente cliente = MostraPesquisaCliente();
-    }//GEN-LAST:event_ListaClienteListaMousePressed
+    private void ListaUnidadeListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaUnidadeListaMousePressed
+        ListaUnidade.setVisible(false);
+        MostraPesquisaUnidade();
+    }//GEN-LAST:event_ListaUnidadeListaMousePressed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        Prescricao prescricao = new Prescricao();
-        prescricao.setCrm(CrmTextPane.getText());
-        Cliente cliente = MostraPesquisaCliente();
-        prescricao.setCliente(cliente);
-            try{
-                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-                InterfacePrescricao iprescricao = (InterfacePrescricao) registro.lookup("Prescricao");
-                iprescricao.inserirPrescricao(prescricao);
-                JOptionPane.showMessageDialog(null, "Prescricao inserida com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                limparCampos();
-                
-            } catch (RemoteException | NotBoundException e) {
-                JOptionPane.showMessageDialog(null, "Erro ao buscar cliente: " + e.getMessage());
-            }
+        Estoque estoque = new Estoque();
+        estoque.setNome(NomeTextPane.getText());
+        Unidade unidade = MostraPesquisaUnidade();
+        estoque.setUnidade(unidade);
+        try{
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceEstoque iEstoque = (InterfaceEstoque) registro.lookup("Estoque");
+            iEstoque.inserirEstoque(estoque);
+            JOptionPane.showMessageDialog(null, "Estoque inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            limparCampos();
+
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao buscar estoque: " + e.getMessage());
+        }
         
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void limparCampos() {
-        CrmTextPane.setText("");
-        PesquisaNomeCliente.setText("");
-    }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextPane CrmTextPane;
-    private javax.swing.JList<String> ListaCliente;
-    private javax.swing.JTextField PesquisaNomeCliente;
+    private javax.swing.JList<String> ListaUnidade;
+    private javax.swing.JTextPane NomeTextPane;
+    private javax.swing.JTextField PesquisaNomeUnidade;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
-
-    
 }

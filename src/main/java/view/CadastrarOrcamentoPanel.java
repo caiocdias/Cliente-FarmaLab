@@ -22,6 +22,7 @@ import model.Cliente;
 import model.Funcionario;
 import model.Orcamento;
 import model.Unidade;
+import model.enums.StatusOrcamento;
 
 /**
  *
@@ -55,6 +56,16 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
         ListaUnidade.setVisible(false);
         MODELOunidade = new DefaultListModel();
         ListaUnidade.setModel(MODELOunidade);
+    }
+    
+    public StatusOrcamento getStatusSelecionado() {
+        String descricaoSelecionada = (String) statusComboBox.getSelectedItem();
+        for (StatusOrcamento status : StatusOrcamento.values()) {
+            if (status.getDescricao().equals(descricaoSelecionada)) {
+                return status;
+            }
+        }
+        return null;  // Caso não encontre um status correspondente
     }
     
     public void ListaDePesquisaUnidade() {
@@ -177,7 +188,11 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
     }
 
     private void limparCampos() {
-        
+        PesquisaNomeUnidade.setText("");
+        PesquisaNomeCliente.setText("");
+        PesquisaNomeFuncionario.setText("");
+        DescricaoTextArea.setText("");
+        statusComboBox.setSelectedIndex(0);
     }
 
     /**
@@ -347,7 +362,7 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
         jLabel6.setText("Status:");
 
         statusComboBox.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
-        statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Em análise", "Parcialmente aprovado", "Aprovado", "Rejeitado", "    " }));
+        statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Em análise", "Aprovado parcialmente. Leia as observações!", "Aprovado. Produto cadastrado!", "Rejeitado", " " }));
         statusComboBox.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 statusComboBoxActionPerformed(evt);
@@ -362,11 +377,11 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 393, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
                 .addComponent(jLabel6)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(statusComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(statusComboBox, 0, 1, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -479,6 +494,8 @@ public class CadastrarOrcamentoPanel extends javax.swing.JPanel {
         orcamento.setFuncionario(funcionario);
         orcamento.setUnidade(unidade);
         orcamento.setDescricao(DescricaoTextArea.getText());
+        StatusOrcamento statusSelecionado = getStatusSelecionado();
+        orcamento.setStatus(statusSelecionado);
         
         
         try {
