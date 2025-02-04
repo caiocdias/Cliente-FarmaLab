@@ -144,9 +144,10 @@ public class MainFrame extends javax.swing.JFrame {
         //panelMap.put("Gerenciar Pedido", new GerenciarPedidoPanel());
         
         panelMap.put("Cadastrar Unidade", new CadastrarUnidadePanel());
-        panelMap.put("Cadastrar Tributo", new CadastrarTributoPanel());
         panelMap.put("Cadastrar Estoque", new CadastrarEstoquePanel());
-        //panelMap.put("Relacionar Unidade Tributo", new RelacionarUnidadeTributoPanel());
+        
+        panelMap.put("Cadastrar Tributo", new CadastrarTributoPanel());
+        panelMap.put("Relacionar Unidade Tributo", new RelacionarUnidadeTributoPanel());
 
         //panelMap.put("Cadastrar Venda", new CadastrarVendaPanel());
         //panelMap.put("Gerenciar Venda", new GerenciarVendaPanel());
