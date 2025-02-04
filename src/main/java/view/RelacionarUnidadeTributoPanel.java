@@ -5,11 +5,7 @@
 package view;
 
 import controller.InterfaceTributo;
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.rmi.Naming;
+import controller.InterfaceUnidade;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -20,13 +16,7 @@ import javax.swing.JOptionPane;
 import java.util.List;
 import java.rmi.Remote;
 import java.util.ArrayList;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
+import javax.swing.DefaultListModel;
 import model.Tributo;
 import model.Unidade;
 
@@ -40,119 +30,115 @@ import model.Unidade;
 
 public class RelacionarUnidadeTributoPanel extends javax.swing.JPanel {
 
-    /**
-     * Creates new form UnidadeTributoPanel
-     */
+    DefaultListModel MODELOunidade;
+    List<Unidade> unidades = new ArrayList<>();
+    Integer [] idsUnidade;
+    
+    DefaultListModel MODELOtributo;
+    List<Tributo> tributos = new ArrayList<>();
+    Integer [] idsTributo;
+    
     public RelacionarUnidadeTributoPanel() {
         initComponents();
+        ListaUnidade.setVisible(false);
+        MODELOunidade = new DefaultListModel();
+        ListaUnidade.setModel(MODELOunidade);
+        
+        ListaTributo.setVisible(false);
+        MODELOtributo = new DefaultListModel();
+        ListaTributo.setModel(MODELOtributo);
     }
-   
-
-    public class UnidadeTributoClientGUI extends JFrame {
-    private JTextArea txtUnidades, txtTributos, txtResultado;
-    private UnidadeTributoService service;
-
-    public UnidadeTributoClientGUI() {
-        setTitle("Relacionar Listas de Unidade e de Tributo");
-        setSize(500, 400);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
-        JPanel panel = new JPanel();
-        panel.setLayout(new GridLayout(3, 2, 5, 5));
-
-        panel.add(new JLabel("Lista de Unidades, apenas um por linha:"));
-        txtUnidades = new JTextArea(5, 20);
-        panel.add(new JScrollPane(txtUnidades));
-
-        panel.add(new JLabel("Lista de Tributos, apenas um por linha, com nome e valor:"));
-        txtTributos = new JTextArea(5, 20);
-        panel.add(new JScrollPane(txtTributos));
-
-        JButton btnRelacionar = new JButton("Relacionar Listas");
-        panel.add(btnRelacionar);
-
-        txtResultado = new JTextArea(5, 40);
-        txtResultado.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(txtResultado);
-
-        add(panel, BorderLayout.CENTER);
-        add(scrollPane, BorderLayout.SOUTH);
-
-        try {
-            service = (UnidadeTributoService) Naming.lookup("//localhost/UnidadeTributoService");
-        } catch (Exception e) {
-            txtResultado.setText("Erro ao conectar ao servidor RMI.\n" + e.getMessage());
-        }
-
-        btnRelacionar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                relacionarListas();
-            }
-        });
-    }
-
-    private void relacionarListas() {
-        try {
-            List<Unidade> unidades = new ArrayList<>();
-            List<Tributo> tributos = new ArrayList<>();
-
-            String[] unidadesTexto = txtUnidades.getText().split("\n");
-            for (int i = 0; i < unidadesTexto.length; i++) {
-                if (!unidadesTexto[i].trim().isEmpty()) {
-                    unidades.add(new Unidade(i + 1, unidadesTexto[i].trim()));
-                }
-            }
-
-            String[] tributosTexto = txtTributos.getText().split("\n");
-            for (int i = 0; i < tributosTexto.length; i++) {
-                String[] partes = tributosTexto[i].split(",");
-                if (partes.length == 2) {
-                    try {
-                        String nome = partes[0].trim();
-                        double valor = Double.parseDouble(partes[1].trim());
-                        tributos.add(new Tributo(i + 1, nome, valor));
-                    } catch (NumberFormatException ex) {
-                        txtResultado.setText("Erro no formato do valor do tributo na linha " + (i + 1));
-                        return;
-                    }
-                } else {
-                    txtResultado.setText("Erro no formato do tributo na linha " + (i + 1));
-                    return;
-                }
-            }
-
-            List<UnidadeTributo> relacionamentos = service.relacionarListas(unidades, tributos);
-
-            // Exibindo resultado
-            StringBuilder resultado = new StringBuilder();
-            for (UnidadeTributo ut : relacionamentos) {
-                resultado.append("Unidade: ").append(ut.getUnidade().getNome())
-                        .append(" -> Tributo: ").append(ut.getTributo().getDescricao())
-                        .append(" (R$ ").append(ut.getTributo().getValor()).append(")\n");
-            }
-
-            txtResultado.setText(resultado.toString());
-
-        } catch (Exception ex) {
-            txtResultado.setText("Erro ao chamar serviço RMI.\n" + ex.getMessage());
-        }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            UnidadeTributoClientGUI frame = new UnidadeTributoClientGUI();
-            frame.setVisible(true);
-        });
-    }
-}
     
+    public Unidade ListaDePesquisaUnidade() {
+        Unidade unidade = null;
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+            unidades = iunidade.buscarUnidadePorNome(PesquisaNomeUnidade.getText());
+
+            MODELOunidade.removeAllElements();
+            idsUnidade = new Integer[unidades.size()];
+            
+            for (int i = 0; i < unidades.size(); i++) {
+                unidade = unidades.get(i);
+                MODELOunidade.addElement(unidade.getNome());
+                idsUnidade[i] = unidade.getId();
+            }
+            
+            ListaUnidade.setVisible(!unidades.isEmpty());
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar unidades: " + e.getMessage());
+        }
+        return unidade;
+    }
+    
+    public Tributo ListaDePesquisaTributo() {
+        Tributo tributo = null;
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+            InterfaceTributo itributo = (InterfaceTributo) registro.lookup("Tributo");
+            tributos = itributo.buscarTributoPorNome(PesquisaNomeTributo.getText());
+
+            MODELOtributo.removeAllElements();
+            idsTributo = new Integer[tributos.size()];
+            
+            for (int i = 0; i < tributos.size(); i++) {
+                tributo = tributos.get(i);
+                MODELOtributo.addElement(tributo.getNome_imposto());
+                idsTributo[i] = tributo.getId();
+            }
+            
+            ListaTributo.setVisible(!tributos.isEmpty());
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao listar tributo: " + e.getMessage());
+        }
+        return tributo;
+    }
+    
+    public Unidade MostraPesquisaUnidade() {
+        Unidade unidade = null;
+        int indiceUnidade = ListaUnidade.getSelectedIndex();
+        if (indiceUnidade >= 0) {
+            try{
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+                unidade = iunidade.obterUnidade(idsUnidade[indiceUnidade]);
+                if (unidade != null) {
+                    PesquisaNomeUnidade.setText(unidade.getNome());
+                }
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar unidade: " + e.getMessage());
+            }
+        } else {
+            unidade = ListaDePesquisaUnidade();
+        }
+        return unidade;
+    }
+
+    public Tributo MostraPesquisaTributo() {
+        Tributo tributo = null;
+        int indiceTributo = ListaTributo.getSelectedIndex();
+        if (indiceTributo >= 0) {
+            try{
+                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
+                InterfaceTributo itributo = (InterfaceTributo) registro.lookup("Tributo");
+                tributo = itributo.obterTributo(idsTributo[indiceTributo]);
+                if (tributo != null) {
+                    PesquisaNomeTributo.setText(tributo.getNome_imposto());
+                }
+            } catch (RemoteException | NotBoundException e) {
+                JOptionPane.showMessageDialog(null, "Erro ao buscar tributo: " + e.getMessage());
+            }
+        } else {
+            tributo = ListaDePesquisaTributo();
+        }
+        return tributo;
+    }
+
     private void limparCampos() {
         PesquisaNomeUnidade.setText("");
         PesquisaNomeTributo.setText("");
     }
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -341,11 +327,7 @@ public class RelacionarUnidadeTributoPanel extends javax.swing.JPanel {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Tributo tributo = new Tributo();
-        tributo.setNome_imposto(nomeField.getText());
-        tributo.setEstado(estadoComboBox.getName());
-        tributo.setHabilitado(true);
-        float porcentagem = Float.parseFloat(porcentagemField.getText());
-        tributo.setPorcentagem(porcentagem);
+        tributo.setNome_imposto(PesquisaNomeTributo.getText());
 
         try {
             Registry registro = LocateRegistry.getRegistry("localhost",1099);
@@ -353,8 +335,21 @@ public class RelacionarUnidadeTributoPanel extends javax.swing.JPanel {
             itributo.inserirTributo(tributo);
             JOptionPane.showMessageDialog(null, "Tributo inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             limparCampos();
-        } catch (RemoteException | NotBoundException ex) {
-            Logger.getLogger(CadastrarClientePanel.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RemoteException | NotBoundException e) {
+           JOptionPane.showMessageDialog(null, "Erro ao atualizar tributo: " + e.getMessage());
+        }
+        
+        Unidade unidade = new Unidade();
+        unidade.setNome(PesquisaNomeUnidade.getText());
+
+        try {
+            Registry registro = LocateRegistry.getRegistry("localhost",1099);
+            InterfaceUnidade iunidade = (InterfaceUnidade) registro.lookup("Unidade");
+            iunidade.inserirUnidade(unidade);
+            JOptionPane.showMessageDialog(null, "Unidade inserido com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            limparCampos();
+        } catch (RemoteException | NotBoundException e) {
+            JOptionPane.showMessageDialog(null, "Erro ao atualizar unidade: " + e.getMessage());
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
