@@ -6,23 +6,18 @@ package view;
 
 import controller.InterfaceCliente;
 import controller.InterfaceFuncionario;
-import controller.InterfaceMedicoParceiro;
 import controller.InterfaceOrcamento;
 import controller.InterfaceUnidade;
-import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import model.Cliente;
 import model.Funcionario;
-import model.MedicoParceiro;
 import model.Orcamento;
 import model.Unidade;
 import model.enums.StatusOrcamento;
@@ -47,15 +42,12 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
     
     public GerenciarOrcamentoPanel() {
         initComponents();
-        ListaCliente.setVisible(false);
         MODELOcliente = new DefaultListModel();
         ListaCliente.setModel(MODELOcliente);
         
-        ListaFuncionario.setVisible(false);
         MODELOfuncionario = new DefaultListModel();
         ListaFuncionario.setModel(MODELOfuncionario);
         
-        ListaUnidade.setVisible(false);
         MODELOunidade = new DefaultListModel();
         ListaUnidade.setModel(MODELOunidade);
         
@@ -247,7 +239,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
         confirmarButton = new javax.swing.JButton();
         excluirButton = new javax.swing.JButton();
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar unidade", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar orçamento", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
 
         PesquisaId.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
 
@@ -496,7 +488,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
 
         excluirButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         excluirButton.setForeground(new java.awt.Color(255, 51, 51));
-        excluirButton.setText("Excluir funcionário");
+        excluirButton.setText("Excluir orçamento");
         excluirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 excluirButtonActionPerformed(evt);
@@ -546,6 +538,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
             orcamento.setFuncionario(funcionario);
             orcamento.setUnidade(unidade);
             orcamento.setDescricao(DescricaoTextArea.getText());
+            orcamento.setObservacoes(ObservacoesTextArea.getText());
             StatusOrcamento statusSelecionado = getStatusSelecionado();
             orcamento.setStatus(statusSelecionado);
             orcamento.setHabilitado(true);
@@ -627,6 +620,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
                 PesquisaNomeCliente.setText(orcamento.getCliente().getNome());
                 PesquisaNomeFuncionario.setText(orcamento.getFuncionario().getNome());
                 DescricaoTextArea.setText(orcamento.getDescricao());
+                ObservacoesTextArea.setText(orcamento.getObservacoes());
                 statusComboBox.setSelectedItem(orcamento.getStatus().getDescricao());
             }else{
                 JOptionPane.showMessageDialog(null, "Nenhum orçamento com esse id");

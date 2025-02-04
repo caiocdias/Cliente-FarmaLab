@@ -211,6 +211,7 @@ public class CadastrarEstoquePanel extends javax.swing.JPanel {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         Estoque estoque = new Estoque();
         estoque.setNome(NomeTextPane.getText());
+        estoque.setHabilitado(true);
         Unidade unidade = MostraPesquisaUnidade();
         estoque.setUnidade(unidade);
         try{
