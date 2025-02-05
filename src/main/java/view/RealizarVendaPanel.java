@@ -9,28 +9,34 @@ import controller.InterfaceFuncionario;
 import controller.InterfacePedido;
 import controller.InterfacePrescricao;
 import controller.InterfaceUnidade;
+import controller.InterfaceVenda;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 import model.Cliente;
 import model.Funcionario;
+import model.NotaFiscal;
 import model.Pedido;
 import model.Prescricao;
 import model.Produto;
 import model.Unidade;
+import model.Venda;
 import model.enums.StatusPedido;
 
 /**
  *
  * @author Isabely
  */
-public class GerenciarPedidoPanel extends javax.swing.JPanel {
-    
+public class RealizarVendaPanel extends javax.swing.JPanel {
+
+    Pedido buscaPedido = new Pedido();
     
     DefaultListModel MODELOcliente;
     List<Cliente> clientes = new ArrayList<>();
@@ -44,7 +50,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
     List<Unidade> unidades = new ArrayList<>();
     Integer [] idsUnidade;
     
-    public GerenciarPedidoPanel() {
+    public RealizarVendaPanel() {
         initComponents();
         
         MODELOcliente = new DefaultListModel();
@@ -55,17 +61,6 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         
         MODELOunidade = new DefaultListModel();
         ListaUnidade.setModel(MODELOunidade);
-        
-    }
-    
-    public StatusPedido getStatusSelecionado() {
-        String descricaoSelecionada = (String) statusComboBox.getSelectedItem();
-        for (StatusPedido status : StatusPedido.values()) {
-            if (status.getDescricao().equals(descricaoSelecionada)) {
-                return status;
-            }
-        }
-        return null;  // Caso não encontre um status correspondente
     }
     
     public Cliente ListaDePesquisaCliente() {
@@ -219,10 +214,11 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         ProdutoField.setText("");
         PesquisaNomeUnidade.setText("");
         PrescricaoField.setText("");
+        PesquisaId.setText("");
         statusComboBox.setSelectedIndex(0);
         ProntaEntregaCheckBox.setSelected(false);
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -253,8 +249,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         ListaCliente = new javax.swing.JList<>();
         Produtos = new javax.swing.JPanel();
         ProdutoField = new javax.swing.JTextField();
-        excluirButton = new javax.swing.JButton();
-        confirmarButton = new javax.swing.JButton();
+        efetuarButton = new javax.swing.JButton();
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Buscar pedido", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
 
@@ -279,7 +274,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addGap(0, 937, Short.MAX_VALUE)
+                        .addGap(0, 909, Short.MAX_VALUE)
                         .addComponent(BuscarButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addComponent(jLabel4)
@@ -298,11 +293,12 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
                 .addContainerGap(11, Short.MAX_VALUE))
         );
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Edição", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
+        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Detalhes do pedido", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 24))); // NOI18N
 
         jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Unidade", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18))); // NOI18N
 
         PesquisaNomeUnidade.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+        PesquisaNomeUnidade.setEnabled(false);
         PesquisaNomeUnidade.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 PesquisaNomeUnidadeKeyReleased(evt);
@@ -310,6 +306,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         });
 
         ListaUnidade.setBorder(null);
+        ListaUnidade.setEnabled(false);
         ListaUnidade.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 ListaUnidadeListaMousePressed(evt);
@@ -340,6 +337,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         jLabel8.setText("Prescrição:");
 
         PrescricaoField.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+        PrescricaoField.setEnabled(false);
         PrescricaoField.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 PrescricaoFieldActionPerformed(evt);
@@ -348,15 +346,18 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
 
         ProntaEntregaCheckBox.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         ProntaEntregaCheckBox.setText("Pronta-entrega");
+        ProntaEntregaCheckBox.setEnabled(false);
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel6.setText("Status:");
 
         statusComboBox.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         statusComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Aguardando Pagamento", "Pronto para Produção", "Em andamento", "Para retirada", "Concluído" }));
+        statusComboBox.setEnabled(false);
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Funcionário", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe UI", 1, 18))); // NOI18N
 
+        PesquisaNomeFuncionario.setEditable(false);
         PesquisaNomeFuncionario.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
         PesquisaNomeFuncionario.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
@@ -365,6 +366,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         });
 
         ListaFuncionario.setBorder(null);
+        ListaFuncionario.setEnabled(false);
         ListaFuncionario.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 ListaFuncionarioListaMousePressed(evt);
@@ -396,6 +398,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         jPanel6.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
 
         PesquisaNomeCliente.setFont(new java.awt.Font("Liberation Sans", 0, 18)); // NOI18N
+        PesquisaNomeCliente.setEnabled(false);
         PesquisaNomeCliente.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyReleased(java.awt.event.KeyEvent evt) {
                 PesquisaNomeClienteKeyReleased(evt);
@@ -403,6 +406,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         });
 
         ListaCliente.setBorder(null);
+        ListaCliente.setEnabled(false);
         ListaCliente.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 ListaClienteListaMousePressed(evt);
@@ -455,7 +459,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(526, Short.MAX_VALUE)
                 .addComponent(ProntaEntregaCheckBox, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jLabel8)
@@ -507,21 +511,12 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
                     .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
-        excluirButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        excluirButton.setForeground(new java.awt.Color(255, 51, 51));
-        excluirButton.setText("Excluir pedido");
-        excluirButton.addActionListener(new java.awt.event.ActionListener() {
+        efetuarButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
+        efetuarButton.setForeground(new java.awt.Color(51, 102, 0));
+        efetuarButton.setText("Efetuar a venda");
+        efetuarButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                excluirButtonActionPerformed(evt);
-            }
-        });
-
-        confirmarButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
-        confirmarButton.setForeground(new java.awt.Color(51, 102, 0));
-        confirmarButton.setText("Confirmar edição");
-        confirmarButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                confirmarButtonActionPerformed(evt);
+                efetuarButtonActionPerformed(evt);
             }
         });
 
@@ -532,12 +527,9 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(confirmarButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(excluirButton)))
+                    .addComponent(efetuarButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -545,39 +537,38 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 21, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(excluirButton)
-                    .addComponent(confirmarButton))
+                .addComponent(efetuarButton)
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     private void BuscarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BuscarButtonActionPerformed
-       
+
         try{
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
             InterfacePedido iPedido = (InterfacePedido) registro.lookup("Pedido");
 
             int id = Integer.parseInt(PesquisaId.getText());
             PesquisaId.getText();
-            Pedido pedido = iPedido.obterPedido(id);
+            buscaPedido = iPedido.obterPedido(id);
             Produto produto = null;
-            
-            if (pedido != null) {
-                PesquisaNomeUnidade.setText(pedido.getUnidade().getNome());
-                PesquisaNomeCliente.setText(pedido.getCliente().getNome());
-                PesquisaNomeFuncionario.setText(pedido.getFuncionario().getNome());
-                PrescricaoField.setText(pedido.getPrescricao().getCrm());
-                ProntaEntregaCheckBox.setSelected(pedido.isPronta_entrega());
-                List<Produto> produtos = pedido.getProdutos();
+
+            if (buscaPedido != null) {
+                PesquisaNomeUnidade.setText(buscaPedido.getUnidade().getNome());
+                PesquisaNomeCliente.setText(buscaPedido.getCliente().getNome());
+                PesquisaNomeFuncionario.setText(buscaPedido.getFuncionario().getNome());
+                PrescricaoField.setText(buscaPedido.getPrescricao().getCrm());
+                ProntaEntregaCheckBox.setSelected(buscaPedido.isPronta_entrega());
+                List<Produto> produtos = buscaPedido.getProdutos();
                 for(int i = 0; i < produtos.size(); i++){
                     produto = produtos.get(i);
+                    System.out.println(produto.getId());
                 }
                 ProdutoField.setText(produto.getTipo_produto().getNome());
-                statusComboBox.setSelectedItem(pedido.getStatus().getDescricao());
+                statusComboBox.setSelectedItem(buscaPedido.getStatus().getDescricao());
             }else{
                 JOptionPane.showMessageDialog(null, "Nenhum pedido com esse id");
             }
@@ -592,8 +583,11 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
 
     private void ListaUnidadeListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaUnidadeListaMousePressed
         Unidade unidade = MostraPesquisaUnidade();
-
     }//GEN-LAST:event_ListaUnidadeListaMousePressed
+
+    private void PrescricaoFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PrescricaoFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PrescricaoFieldActionPerformed
 
     private void PesquisaNomeFuncionarioKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeFuncionarioKeyReleased
         ListaDePesquisaFuncionario();
@@ -601,7 +595,6 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
 
     private void ListaFuncionarioListaMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ListaFuncionarioListaMousePressed
         Funcionario funcionario = MostraPesquisaFuncionario();
-
     }//GEN-LAST:event_ListaFuncionarioListaMousePressed
 
     private void PesquisaNomeClienteKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_PesquisaNomeClienteKeyReleased
@@ -612,64 +605,23 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
         Cliente cliente = MostraPesquisaCliente();
     }//GEN-LAST:event_ListaClienteListaMousePressed
 
-    private void excluirButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluirButtonActionPerformed
-        int confirmacao = JOptionPane.showConfirmDialog(null, "Tem certeza que deseja excluir este pedido", "Confirmação", JOptionPane.YES_NO_OPTION);
-        if (confirmacao == JOptionPane.YES_OPTION) {
-            try {
-                Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-                InterfacePedido iPedido = (InterfacePedido) registro.lookup("Pedido");
-
-                int id = Integer.parseInt(PesquisaId.getText());
-                iPedido.desativarPedido(id);
-                JOptionPane.showMessageDialog(null, "Pedido excluído com sucesso!");
-                limparCampos();
-            } catch (RemoteException | NotBoundException e) {
-                JOptionPane.showMessageDialog(null, "Erro ao excluir pedido: " + e.getMessage());
-            }
-        }
-    }//GEN-LAST:event_excluirButtonActionPerformed
-
-    private void confirmarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmarButtonActionPerformed
-        Pedido pedido = new Pedido();
+    private void efetuarButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_efetuarButtonActionPerformed
         
         try {
-            Cliente cliente = MostraPesquisaCliente();
-            Funcionario funcionario = MostraPesquisaFuncionario();
-            Unidade unidade = MostraPesquisaUnidade();
-            Prescricao prescricao = PesquisaPrescricao();
-            
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
-            InterfacePedido iPedido = (InterfacePedido) registro.lookup("Pedido");
-            int id = Integer.parseInt(PesquisaId.getText());
+            InterfaceVenda iVenda = (InterfaceVenda) registro.lookup("Venda");
             
-            pedido.setId(id);
-            pedido.setCliente(cliente);
-            pedido.setFuncionario(funcionario);
-            pedido.setUnidade(unidade);
-            
-            if(prescricao == null){
-                JOptionPane.showMessageDialog(null, "Prescrição não encontrada!", "Falha", JOptionPane.ERROR_MESSAGE);
-            } else {
-                pedido.setPrescricao(prescricao);
-            }
-            
-            StatusPedido statusSelecionado = getStatusSelecionado();
-            pedido.setStatus(statusSelecionado);
-            pedido.setPronta_entrega(ProntaEntregaCheckBox.isSelected());
-            pedido.setHabilitado(true);
-
-            iPedido.atualizarPedido(pedido);
-            JOptionPane.showMessageDialog(null, "Pedido atualizado com sucesso!");
+            Venda venda = new Venda();
+            venda.setPedido(buscaPedido);
+            venda.setUnidade(buscaPedido.getUnidade());
+            venda.setHabilitado(true);
+            venda = iVenda.inserirVenda(venda);
+            JOptionPane.showMessageDialog(null, iVenda.imprimirNotaFiscal(venda));
             limparCampos();
         } catch (RemoteException | NotBoundException e) {
             JOptionPane.showMessageDialog(null, "Erro ao atualizar pedio: " + e.getMessage());
         }
-
-    }//GEN-LAST:event_confirmarButtonActionPerformed
-
-    private void PrescricaoFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PrescricaoFieldActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PrescricaoFieldActionPerformed
+    }//GEN-LAST:event_efetuarButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -685,8 +637,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
     private javax.swing.JTextField ProdutoField;
     private javax.swing.JPanel Produtos;
     private javax.swing.JCheckBox ProntaEntregaCheckBox;
-    private javax.swing.JButton confirmarButton;
-    private javax.swing.JButton excluirButton;
+    private javax.swing.JButton efetuarButton;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel8;

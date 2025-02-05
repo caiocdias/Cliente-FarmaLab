@@ -85,13 +85,7 @@ public class MainFrame extends javax.swing.JFrame {
         treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Orçamento");
         treeNode2.add(treeNode3);
         treeNode1.add(treeNode2);
-        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Vendas");
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Cadastrar Venda");
-        treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Gerenciar Venda");
-        treeNode2.add(treeNode3);
-        treeNode3 = new javax.swing.tree.DefaultMutableTreeNode("Imprimir Nota Fiscal");
-        treeNode2.add(treeNode3);
+        treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Realizar Venda");
         treeNode1.add(treeNode2);
         treeNode2 = new javax.swing.tree.DefaultMutableTreeNode("Área do Manipulador");
         treeNode1.add(treeNode2);
@@ -149,11 +143,9 @@ public class MainFrame extends javax.swing.JFrame {
         panelMap.put("Cadastrar Tributo", new CadastrarTributoPanel());
         panelMap.put("Relacionar Unidade Tributo", new RelacionarUnidadeTributoPanel());
 
-        //panelMap.put("Cadastrar Venda", new CadastrarVendaPanel());
-        //panelMap.put("Gerenciar Venda", new GerenciarVendaPanel());
-        //panelMap.put("Imprimir Nota Fiscal", new GerenciarVendaPanel());
+        panelMap.put("Realizar Venda", new RealizarVendaPanel());
 
-        //panelMap.put("Área do Manipulador", new AreaManipuladorPanel());
+        panelMap.put("Área do Manipulador", new AreaManipuladorPanel());
     }
     
     private void jTree2ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree2ValueChanged

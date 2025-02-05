@@ -533,7 +533,8 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
         try {
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
             InterfaceOrcamento iOrcamento = (InterfaceOrcamento) registro.lookup("Orcamento");
-
+            int id = Integer.parseInt(PesquisaId.getText());
+            orcamento.setId(id);
             orcamento.setCliente(cliente);
             orcamento.setFuncionario(funcionario);
             orcamento.setUnidade(unidade);
@@ -542,7 +543,6 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
             StatusOrcamento statusSelecionado = getStatusSelecionado();
             orcamento.setStatus(statusSelecionado);
             orcamento.setHabilitado(true);
-
 
             iOrcamento.atualizarOrcamento(orcamento);
             JOptionPane.showMessageDialog(null, "Orcamento atualizado com sucesso!");
@@ -613,7 +613,6 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
             InterfaceOrcamento iOrcamento = (InterfaceOrcamento) registro.lookup("Orcamento");
             
             int id = Integer.parseInt(PesquisaId.getText());
-            PesquisaId.getText();
             Orcamento orcamento = iOrcamento.obterOrcamento(id);
             if (orcamento != null) {
                 PesquisaNomeUnidade.setText(orcamento.getUnidade().getNome());
