@@ -509,7 +509,7 @@ public class GerenciarPedidoPanel extends javax.swing.JPanel {
 
         excluirButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         excluirButton.setForeground(new java.awt.Color(255, 51, 51));
-        excluirButton.setText("Excluir pedido");
+        excluirButton.setText("Desabilitar pedido");
         excluirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 excluirButtonActionPerformed(evt);

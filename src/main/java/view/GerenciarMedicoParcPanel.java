@@ -228,7 +228,7 @@ public class GerenciarMedicoParcPanel extends javax.swing.JPanel {
 
         excluirButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         excluirButton.setForeground(new java.awt.Color(255, 51, 51));
-        excluirButton.setText("Excluir funcionário");
+        excluirButton.setText("Desabilitar Médico");
         excluirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 excluirButtonActionPerformed(evt);

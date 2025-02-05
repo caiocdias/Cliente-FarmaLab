@@ -488,7 +488,7 @@ public class GerenciarOrcamentoPanel extends javax.swing.JPanel {
 
         excluirButton.setFont(new java.awt.Font("Liberation Sans", 1, 24)); // NOI18N
         excluirButton.setForeground(new java.awt.Color(255, 51, 51));
-        excluirButton.setText("Excluir orçamento");
+        excluirButton.setText("Desabilitar orçamento");
         excluirButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 excluirButtonActionPerformed(evt);
