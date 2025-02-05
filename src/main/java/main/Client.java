@@ -7,7 +7,9 @@ package main;
 import controller.InterfaceFuncionario;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.RMISocketFactory;
 import javax.swing.JOptionPane;
+import model.TimeoutSocketFactory;
 import view.MainFrame;
 /**
  *
@@ -88,6 +90,7 @@ public class Client extends javax.swing.JFrame {
         String senha = new String(senhaField.getPassword()); //123456
 
         try {
+            RMISocketFactory.setSocketFactory(new TimeoutSocketFactory(5000));
             Registry registro = LocateRegistry.getRegistry("localhost", 1099);
             InterfaceFuncionario iFuncionario = (InterfaceFuncionario) registro.lookup("Funcionario");
 
